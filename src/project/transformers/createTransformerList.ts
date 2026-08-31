@@ -1,4 +1,5 @@
-import resolve from 'resolve';
+import { createRequire } from 'node:module';
+import path from 'node:path';
 import { warnings } from 'shared/diagnostics';
 import type { TransformerPluginConfig } from 'shared/types';
 import { DiagnosticService } from 'ts-transformer/classes/DiagnosticService';
@@ -97,7 +98,8 @@ export function createTransformerList(
 		if (!config.transform) continue;
 
 		try {
-			const modulePath = resolve.sync(config.transform, { basedir: baseDir });
+			const require = createRequire(path.join(baseDir, 'noop.js'));
+			const modulePath = require.resolve(config.transform);
 
 			// eslint-disable-next-line @typescript-eslint/no-require-imports -- need to require the transformer
 			const commonjsModule: PluginFactory | { [key: string]: PluginFactory } = require(modulePath);

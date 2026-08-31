@@ -1,7 +1,7 @@
 import { spawnSync } from 'node:child_process';
 import util from 'node:util';
-import kleur from 'kleur';
 import { LogService } from 'shared/classes/LogService';
+import { red, yellow } from 'shared/util/colors';
 import { getKindName } from 'ts-transformer/util/getKindName';
 import ts from 'typescript';
 
@@ -29,11 +29,11 @@ function error(message: string): never {
 		JSON.parse(spawnSync('npm ls typescript --json').stdout.toString()) as LsInfo
 	);
 	LogService.fatal(
-		kleur.red(`Exhaustive assertion failed! ${message}`) +
-			kleur.yellow('\nThis is usually caused by a TypeScript version mismatch.') +
-			kleur.yellow('\nMake sure that all TS versions in your project are the same.') +
-			kleur.yellow('\nYou can check the list of installed versions with `npm list typescript`') +
-			(typescriptVersion ? kleur.yellow(`\nTry running \`npm install typescript@=${typescriptVersion}\``) : '')
+		red(`Exhaustive assertion failed! ${message}`) +
+			yellow('\nThis is usually caused by a TypeScript version mismatch.') +
+			yellow('\nMake sure that all TS versions in your project are the same.') +
+			yellow('\nYou can check the list of installed versions with `npm list typescript`') +
+			(typescriptVersion ? yellow(`\nTry running \`npm install typescript@=${typescriptVersion}\``) : '')
 	);
 }
 

@@ -1,6 +1,6 @@
 import type { RbxPath } from '@roblox-ts/rojo-resolver';
-import kleur from 'kleur';
 import type { SourceFileWithTextRange } from 'shared/types';
+import { yellow } from 'shared/util/colors';
 import { createDiagnosticWithLocation } from 'shared/util/createDiagnosticWithLocation';
 import { issue } from 'shared/util/createGithubLink';
 import { createTextDiagnostic } from 'shared/util/createTextDiagnostic';
@@ -14,7 +14,7 @@ export type DiagnosticFactory<T extends Array<unknown> = []> = {
 type DiagnosticContextFormatter<T extends Array<unknown> = []> = (...context: T) => Array<string | false>;
 
 function suggestion(text: string) {
-	return `Suggestion: ${kleur.yellow(text)}`;
+	return `Suggestion: ${yellow(text)}`;
 }
 
 let id = 0;

@@ -14,6 +14,7 @@ export function spreadDestructureObject(
 				if (luau.isComputedIndexExpression(expression)) return expression.index;
 
 				assert(false, 'Unknown expression type');
+				return luau.none();
 			})
 		),
 		'extracted'

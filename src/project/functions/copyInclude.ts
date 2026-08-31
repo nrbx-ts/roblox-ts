@@ -1,4 +1,4 @@
-import fs from 'fs-extra';
+import fs from 'node:fs';
 import { INCLUDE_PATH, ProjectType } from 'shared/constants';
 import type { ProjectData } from 'shared/types';
 import { benchmarkIfVerbose } from 'shared/util/benchmark';
@@ -10,7 +10,7 @@ export function copyInclude(data: ProjectData) {
 		!(data.projectOptions.type === undefined && data.isPackage)
 	) {
 		benchmarkIfVerbose('copy include files', () =>
-			fs.copySync(INCLUDE_PATH, data.projectOptions.includePath, { dereference: true })
+			fs.cpSync(INCLUDE_PATH, data.projectOptions.includePath, { recursive: true, dereference: true })
 		);
 	}
 }

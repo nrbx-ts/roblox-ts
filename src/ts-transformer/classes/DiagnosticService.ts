@@ -1,40 +1,40 @@
-import { hasErrors } from 'shared/util/hasErrors';
+import { hasErrors as hasAnyErrors } from 'shared/util/hasErrors';
 import type ts from 'typescript';
 
-export class DiagnosticService {
-	private static diagnostics = [] as ts.Diagnostic[];
+export namespace DiagnosticService {
+	let diagnostics = [] as ts.Diagnostic[];
+	const singleDiagnostics = new Set<number>();
 
-	private static singleDiagnostics = new Set<number>();
-	public static addSingleDiagnostic(diagnostic: ts.Diagnostic) {
-		if (!DiagnosticService.singleDiagnostics.has(diagnostic.code)) {
-			DiagnosticService.singleDiagnostics.add(diagnostic.code);
-			DiagnosticService.addDiagnostic(diagnostic);
+	export function addSingleDiagnostic(diagnostic: ts.Diagnostic) {
+		if (!singleDiagnostics.has(diagnostic.code)) {
+			singleDiagnostics.add(diagnostic.code);
+			addDiagnostic(diagnostic);
 		}
 	}
 
-	public static addDiagnostic(diagnostic: ts.Diagnostic) {
-		DiagnosticService.diagnostics.push(diagnostic);
+	export function addDiagnostic(diagnostic: ts.Diagnostic) {
+		diagnostics.push(diagnostic);
 	}
 
-	public static addDiagnostics(diagnostics: ReadonlyArray<ts.Diagnostic>) {
-		DiagnosticService.diagnostics.push(...diagnostics);
+	export function addDiagnostics(newDiagnostics: ReadonlyArray<ts.Diagnostic>) {
+		diagnostics.push(...newDiagnostics);
 	}
 
-	public static addDiagnosticWithCache<T>(cacheBy: T, diagnostic: ts.Diagnostic, cache: Set<T>) {
+	export function addDiagnosticWithCache<T>(cacheBy: T, diagnostic: ts.Diagnostic, cache: Set<T>) {
 		if (!cache.has(cacheBy)) {
 			cache.add(cacheBy);
-			DiagnosticService.addDiagnostic(diagnostic);
+			addDiagnostic(diagnostic);
 		}
 	}
 
-	public static flush() {
-		const current = DiagnosticService.diagnostics;
-		DiagnosticService.diagnostics = [];
-		DiagnosticService.singleDiagnostics.clear();
+	export function flush() {
+		const current = diagnostics;
+		diagnostics = [];
+		singleDiagnostics.clear();
 		return current;
 	}
 
-	public static hasErrors() {
-		return hasErrors(DiagnosticService.diagnostics);
+	export function hasErrors() {
+		return hasAnyErrors(diagnostics);
 	}
 }

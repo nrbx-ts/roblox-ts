@@ -7,7 +7,6 @@ export interface ProjectOptions {
 	type: ProjectType | undefined;
 	logTruthyChanges: boolean;
 	noInclude: boolean;
-	usePolling: boolean;
 	verbose: boolean;
 	watch: boolean;
 	writeOnlyChanged: boolean;

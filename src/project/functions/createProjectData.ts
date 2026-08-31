@@ -1,6 +1,6 @@
+import fs from 'node:fs';
 import path from 'node:path';
 import { RojoResolver } from '@roblox-ts/rojo-resolver';
-import fs from 'fs-extra';
 import { LogService } from 'shared/classes/LogService';
 import { NODE_MODULES } from 'shared/constants';
 import { ProjectError } from 'shared/errors/ProjectError';
@@ -19,7 +19,7 @@ export function createProjectData(tsConfigPath: string, projectOptions: ProjectO
 
 	let isPackage = false;
 	try {
-		const pkgJson = JSON.parse(fs.readFileSync(pkgJsonPath).toString());
+		const pkgJson = JSON.parse(fs.readFileSync(pkgJsonPath, 'utf8'));
 		isPackage = PACKAGE_REGEX.test(pkgJson.name ?? '');
 	} catch {
 		// errors if no pkgJson, so assume not a package

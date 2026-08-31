@@ -1,35 +1,36 @@
-import kleur from 'kleur';
+import { yellow } from 'shared/util/colors';
 
-export class LogService {
-	public static verbose = false;
-	private static partial = false;
+export namespace LogService {
+	// biome-ignore lint/style/useConst: verbose is reassigned from outside this module (src/cli/commands/build.ts).
+	export let verbose = false;
+	let partial = false;
 
-	static write(message: string) {
-		LogService.partial = !message.endsWith('\n');
+	export function write(message: string) {
+		partial = !message.endsWith('\n');
 		process.stdout.write(message);
 	}
 
-	static writeLine(...messages: Array<unknown>) {
-		if (LogService.partial) {
-			LogService.write('\n');
+	export function writeLine(...messages: Array<unknown>) {
+		if (partial) {
+			write('\n');
 		}
 		for (const message of messages) {
-			LogService.write(`${message}\n`);
+			write(`${message}\n`);
 		}
 	}
 
-	static writeLineIfVerbose(...messages: Array<unknown>) {
-		if (LogService.verbose) {
-			LogService.writeLine(...messages);
+	export function writeLineIfVerbose(...messages: Array<unknown>) {
+		if (verbose) {
+			writeLine(...messages);
 		}
 	}
 
-	static warn(message: string) {
-		LogService.writeLine(`${kleur.yellow('Compiler Warning:')} ${message}`);
+	export function warn(message: string) {
+		writeLine(`${yellow('Compiler Warning:')} ${message}`);
 	}
 
-	static fatal(message: string): never {
-		LogService.writeLine(message);
+	export function fatal(message: string): never {
+		writeLine(message);
 		process.exit(1);
 	}
 }

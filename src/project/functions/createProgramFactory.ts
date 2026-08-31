@@ -1,4 +1,4 @@
-import fs from 'fs-extra';
+import fs from 'node:fs';
 import type { ProjectData } from 'project';
 import { createReadBuildProgramHost } from 'project/util/createReadBuildProgramHost';
 import { COMPILER_VERSION } from 'shared/constants';
@@ -15,7 +15,7 @@ function createCompilerHost(data: ProjectData, compilerOptions: ts.CompilerOptio
 	contentsToHash += `plugins=${JSON.stringify(compilerOptions.plugins ?? [])},`;
 
 	if (data.rojoConfigPath && fs.existsSync(data.rojoConfigPath)) {
-		contentsToHash += fs.readFileSync(data.rojoConfigPath).toString();
+		contentsToHash += fs.readFileSync(data.rojoConfigPath, 'utf8');
 	}
 
 	assert(host.createHash);

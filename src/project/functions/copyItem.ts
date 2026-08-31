@@ -1,17 +1,18 @@
+import fs from 'node:fs';
 import type { PathTranslator } from '@roblox-ts/path-translator';
-import fs from 'fs-extra';
 import type { ProjectData } from 'project';
 import { isCompilableFile } from 'project/util/isCompilableFile';
 import { DTS_EXT } from 'shared/constants';
 
 export function copyItem(data: ProjectData, pathTranslator: PathTranslator, item: string) {
-	fs.copySync(item, pathTranslator.getOutputPath(item), {
+	fs.cpSync(item, pathTranslator.getOutputPath(item), {
+		recursive: true,
 		filter: (src, dest) => {
 			if (
 				data.projectOptions.writeOnlyChanged &&
-				fs.pathExistsSync(dest) &&
+				fs.existsSync(dest) &&
 				!fs.lstatSync(src).isDirectory() &&
-				fs.readFileSync(src).toString() === fs.readFileSync(dest).toString()
+				fs.readFileSync(src, 'utf8') === fs.readFileSync(dest, 'utf8')
 			) {
 				return false;
 			}

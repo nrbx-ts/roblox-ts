@@ -4,6 +4,8 @@ coverage.lcov
 coverage
 node_modules
 out
+*.tsbuildinfo
+.yarn/install-state.gz
 .DS_Store
 .history
 .vscode/launch.json

@@ -1,4 +1,4 @@
-import fs from 'fs-extra';
+import fs from 'node:fs';
 import { DTS_EXT, TS_EXT, TSX_EXT } from 'shared/constants';
 
 export function isCompilableFile(fsPath: string) {

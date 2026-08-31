@@ -1,5 +1,6 @@
 import fs from 'node:fs';
 import path from 'node:path';
+import { type ArgsDef, defineCommand } from 'citty';
 import { CLIError } from 'cli/errors/CLIError';
 import { cleanup } from 'project/functions/cleanup';
 import { compileFiles } from 'project/functions/compileFiles';
@@ -17,7 +18,6 @@ import type { ProjectOptions } from 'shared/types';
 import { getRootDirs } from 'shared/util/getRootDirs';
 import { hasErrors } from 'shared/util/hasErrors';
 import ts from 'typescript';
-import type yargs from 'yargs';
 
 function getTsConfigProjectOptions(tsConfigPath?: string): Partial<ProjectOptions> | undefined {
 	if (tsConfigPath !== undefined) {
@@ -39,94 +39,91 @@ function findTsConfigPath(projectPath: string) {
 	return path.resolve(process.cwd(), tsConfigPath);
 }
 
-interface BuildFlags {
-	project: string;
-}
+export const buildArgs = {
+	project: {
+		type: 'string',
+		alias: 'p',
+		default: '.',
+		description: 'project path',
+		valueHint: 'path',
+	},
+	// DO NOT PROVIDE DEFAULTS BELOW HERE, USE DEFAULT_PROJECT_OPTIONS
+	watch: {
+		type: 'boolean',
+		alias: 'w',
+		description: 'enable watch mode',
+	},
+	verbose: {
+		type: 'boolean',
+		description: 'enable verbose logs',
+	},
+	noInclude: {
+		type: 'boolean',
+		description: 'do not copy include files',
+	},
+	logTruthyChanges: {
+		type: 'boolean',
+		description: 'logs changes to truthiness evaluation from Lua truthiness rules',
+	},
+	writeOnlyChanged: {
+		type: 'boolean',
+		description: 'only writes files that changed since the last build',
+	},
+	writeTransformedFiles: {
+		type: 'boolean',
+		description: 'writes resulting TypeScript ASTs after transformers to out directory',
+	},
+	optimizedLoops: {
+		type: 'boolean',
+		description: 'enables optimized loop transformations',
+	},
+	type: {
+		type: 'enum',
+		options: [ProjectType.Game, ProjectType.Model, ProjectType.Package],
+		description: 'override project type',
+	},
+	includePath: {
+		type: 'string',
+		alias: 'i',
+		description: 'folder to copy runtime files to',
+		valueHint: 'path',
+	},
+	rojo: {
+		type: 'string',
+		description: 'manually select Rojo project file',
+		valueHint: 'path',
+	},
+	allowCommentDirectives: {
+		type: 'boolean',
+		description: 'allows comment directives in source files',
+	},
+	luau: {
+		type: 'boolean',
+		description: 'emit files with .luau extension',
+	},
+} satisfies ArgsDef;
 
 /**
  * Defines the behavior for the `rbxtsc build` command.
  */
-export = ts.identity<yargs.CommandModule<object, BuildFlags & Partial<ProjectOptions>>>({
-	command: ['$0', 'build'],
+export const buildCommand = defineCommand({
+	meta: {
+		name: 'build',
+		description: 'Build a project',
+	},
 
-	describe: 'Build a project',
+	args: buildArgs,
 
-	builder: (parser: yargs.Argv) =>
-		parser
-			.option('project', {
-				alias: 'p',
-				string: true,
-				default: '.',
-				describe: 'project path',
-			})
-			// DO NOT PROVIDE DEFAULTS BELOW HERE, USE DEFAULT_PROJECT_OPTIONS
-			.option('watch', {
-				alias: 'w',
-				boolean: true,
-				describe: 'enable watch mode',
-			})
-			.option('usePolling', {
-				implies: 'watch',
-				boolean: true,
-				describe: 'use polling for watch mode',
-			})
-			.option('verbose', {
-				boolean: true,
-				describe: 'enable verbose logs',
-			})
-			.option('noInclude', {
-				boolean: true,
-				describe: 'do not copy include files',
-			})
-			.option('logTruthyChanges', {
-				boolean: true,
-				describe: 'logs changes to truthiness evaluation from Lua truthiness rules',
-			})
-			.option('writeOnlyChanged', {
-				boolean: true,
-				hidden: true,
-			})
-			.option('writeTransformedFiles', {
-				boolean: true,
-				hidden: true,
-				describe: 'writes resulting TypeScript ASTs after transformers to out directory',
-			})
-			.option('optimizedLoops', {
-				boolean: true,
-				hidden: true,
-			})
-			.option('type', {
-				choices: [ProjectType.Game, ProjectType.Model, ProjectType.Package] as const,
-				describe: 'override project type',
-			})
-			.option('includePath', {
-				alias: 'i',
-				string: true,
-				describe: 'folder to copy runtime files to',
-			})
-			.option('rojo', {
-				string: true,
-				describe: 'manually select Rojo project file',
-			})
-			.option('allowCommentDirectives', {
-				boolean: true,
-				hidden: true,
-			})
-			.option('luau', {
-				boolean: true,
-				describe: 'emit files with .luau extension',
-			}),
-
-	handler: async (argv) => {
+	async run({ args }) {
 		try {
-			const tsConfigPath = findTsConfigPath(argv.project);
+			const tsConfigPath = findTsConfigPath(args.project);
 
 			// parse the contents of the retrieved JSON path as a partial `ProjectOptions`
 			const projectOptions: ProjectOptions = Object.assign(
 				{},
 				DEFAULT_PROJECT_OPTIONS,
 				getTsConfigProjectOptions(tsConfigPath),
-				argv
+				args
 			);
 
 			LogService.verbose = projectOptions.verbose === true;
@@ -135,7 +132,7 @@ export = ts.identity<yargs.CommandModule<object, BuildFlags & Partial<ProjectOpt
 
 			const data = createProjectData(tsConfigPath, projectOptions);
 			if (projectOptions.watch) {
-				setupProjectWatchProgram(data, projectOptions.usePolling);
+				await setupProjectWatchProgram(data);
 			} else {
 				const program = createProjectProgram(data);
 				const pathTranslator = createPathTranslator(program, data);

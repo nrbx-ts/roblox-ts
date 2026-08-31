@@ -8,7 +8,7 @@ Only behavior unique to CLI environments should go here. Any behavior that is co
 
 ## Structure
 
-**commands/** - stores all of the yargs-based subcommands for the cli interface
+**commands/** - stores all of the citty-based subcommands for the cli interface
 
 **commands/build.ts** - the `build` command, this runs by default and can have the following flags:
 
@@ -21,4 +21,4 @@ Only behavior unique to CLI environments should go here. Any behavior that is co
 
 **modules/Initializer.ts** - used to create projects from templates using the `init` command.
 
-**cli.ts** - used to kickstart yargs
+**cli.ts** - used to define the main command and kickstart citty

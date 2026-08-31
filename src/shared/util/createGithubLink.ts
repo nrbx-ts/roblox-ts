@@ -1,7 +1,7 @@
-import kleur from 'kleur';
+import { grey } from 'shared/util/colors';
 
 const REPO_URL = 'https://github.com/roblox-ts/roblox-ts';
 
 export function issue(id: number) {
-	return `More information: ${kleur.grey(`${REPO_URL}/issues/${id}`)}`;
+	return `More information: ${grey(`${REPO_URL}/issues/${id}`)}`;
 }

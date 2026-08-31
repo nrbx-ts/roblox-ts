@@ -52,7 +52,9 @@ function getIgnoredExportSymbols(state: TransformState, sourceFile: ts.SourceFil
 				// export * from "./module";
 				const moduleSymbol = getOriginalSymbolOfNode(state.typeChecker, statement.moduleSpecifier);
 				if (moduleSymbol) {
-					state.getModuleExports(moduleSymbol).forEach((v) => ignoredSymbols.add(v));
+					state.getModuleExports(moduleSymbol).forEach((v) => {
+						ignoredSymbols.add(v);
+					});
 				}
 			} else if (ts.isNamespaceExport(statement.exportClause)) {
 				// export * as id from "./module";

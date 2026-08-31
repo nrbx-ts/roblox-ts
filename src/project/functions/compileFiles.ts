@@ -1,8 +1,8 @@
+import fs from 'node:fs';
 import path from 'node:path';
 import { renderAST } from '@roblox-ts/luau-ast';
 import type { PathTranslator } from '@roblox-ts/path-translator';
 import { NetworkType, type RbxPath, RojoResolver } from '@roblox-ts/rojo-resolver';
-import fs from 'fs-extra';
 import { checkFileName } from 'project/functions/checkFileName';
 import { checkRojoConfig } from 'project/functions/checkRojoConfig';
 import { createNodeModulesPathMapping } from 'project/functions/createNodeModulesPathMapping';
@@ -112,7 +112,9 @@ export function compileFiles(
 			const transformerList = createTransformerList(program, pluginConfigs, data.projectPath);
 			const transformers = flattenIntoTransformers(transformerList);
 			if (transformers.length > 0) {
-				const { service, updateFile } = (data.transformerWatcher ??= createTransformerWatcher(program));
+				const transformerWatcher = data.transformerWatcher ?? createTransformerWatcher(program);
+				data.transformerWatcher = transformerWatcher;
+				const { service, updateFile } = transformerWatcher;
 				const transformResult = ts.transformNodes(
 					undefined,
 					undefined,
@@ -133,7 +135,8 @@ export function compileFiles(
 						updateFile(sourceFile.fileName, source);
 						if (data.projectOptions.writeTransformedFiles) {
 							const outPath = pathTranslator.getOutputTransformedPath(sourceFile.fileName);
-							fs.outputFileSync(outPath, source);
+							fs.mkdirSync(path.dirname(outPath), { recursive: true });
+							fs.writeFileSync(outPath, source);
 						}
 					}
 				}
@@ -194,10 +197,11 @@ export function compileFiles(
 				const outPath = pathTranslator.getOutputPath(sourceFile.fileName);
 				if (
 					!data.projectOptions.writeOnlyChanged ||
-					!fs.pathExistsSync(outPath) ||
-					fs.readFileSync(outPath).toString() !== source
+					!fs.existsSync(outPath) ||
+					fs.readFileSync(outPath, 'utf8') !== source
 				) {
-					fs.outputFileSync(outPath, source);
+					fs.mkdirSync(path.dirname(outPath), { recursive: true });
+					fs.writeFileSync(outPath, source);
 					emittedFiles.push(outPath);
 				}
 				if (compilerOptions.declaration) {

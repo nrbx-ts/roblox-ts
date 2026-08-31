@@ -1,8 +1,8 @@
 import fs from 'node:fs';
 import path from 'node:path';
-import kleur from 'kleur';
 import { DTS_EXT, NODE_MODULES, RBXTS_SCOPE } from 'shared/constants';
 import { ProjectError } from 'shared/errors/ProjectError';
+import { yellow } from 'shared/util/colors';
 import ts from 'typescript';
 
 const ENFORCED_OPTIONS = {
@@ -15,9 +15,9 @@ const ENFORCED_OPTIONS = {
 	allowSyntheticDefaultImports: true,
 } as const;
 
-/** shorthand for kleur.yellow */
+/** shorthand for yellow */
 function y(str: string) {
-	return kleur.yellow(str);
+	return yellow(str);
 }
 
 function validateTypeRoots(nodeModulesPath: string, typeRoots: Array<string>) {

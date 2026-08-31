@@ -1,5 +1,5 @@
+import fs from 'node:fs';
 import type { PathTranslator } from '@roblox-ts/path-translator';
-import fs from 'fs-extra';
 import { LogService } from 'shared/classes/LogService';
 import { DTS_EXT } from 'shared/constants';
 
@@ -9,7 +9,7 @@ function isOutputFileOrphaned(pathTranslator: PathTranslator, filePath: string) 
 	}
 
 	for (const path of pathTranslator.getInputPaths(filePath)) {
-		if (fs.pathExistsSync(path)) {
+		if (fs.existsSync(path)) {
 			return false;
 		}
 	}
@@ -23,7 +23,7 @@ function isOutputFileOrphaned(pathTranslator: PathTranslator, filePath: string) 
 
 export function tryRemoveOutput(pathTranslator: PathTranslator, outPath: string) {
 	if (isOutputFileOrphaned(pathTranslator, outPath)) {
-		fs.removeSync(outPath);
+		fs.rmSync(outPath, { recursive: true, force: true });
 		LogService.writeLineIfVerbose(`remove ${outPath}`);
 	}
 }

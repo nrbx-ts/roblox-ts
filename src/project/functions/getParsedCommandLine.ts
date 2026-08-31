@@ -26,11 +26,6 @@ export function getParsedCommandLine(data: ProjectData) {
 		throw new DiagnosticError(parsedCommandLine.errors);
 	}
 
-	if ((globalThis as unknown as { RBXTSC_DEV: boolean }).RBXTSC_DEV || inspector.url() !== undefined) {
-		parsedCommandLine.options.incremental = false;
-		parsedCommandLine.options.tsBuildInfoFile = undefined;
-	}
-
 	validateCompilerOptions(parsedCommandLine.options, data.projectPath);
 	return parsedCommandLine;
 }

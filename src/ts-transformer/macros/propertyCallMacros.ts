@@ -452,7 +452,7 @@ const READONLY_ARRAY_METHODS: MacroList<PropertyCallMacro> = {
 
 		const lengthExp = luau.unary('#', expression);
 
-		let resultId;
+		let resultId: luau.TemporaryIdentifier;
 		// if there was no initialValue supplied
 		if (args.length < 2) {
 			state.prereq(
@@ -908,6 +908,7 @@ const MAP_METHODS: MacroList<PropertyCallMacro> = {
 };
 
 const PROMISE_METHODS: MacroList<PropertyCallMacro> = {
+	// biome-ignore lint/suspicious/noThenProperty: this is a Promise method macro key, not a thenable.
 	then: (_state, _node, expression, args) =>
 		luau.create(luau.SyntaxKind.MethodCallExpression, {
 			expression: convertToIndexableExpression(expression),

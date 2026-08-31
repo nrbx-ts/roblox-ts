@@ -1,8 +1,0 @@
-{
-	"extends": "../../tsconfig-base.json",
-	"compilerOptions": {
-		"outDir": "../../out/ts-transformer",
-		"rootDir": "."
-	},
-	"references": [{ "path": "../shared" }]
-}

@@ -1,6 +1,0 @@
-{
-	"name": "roblox-ts-dev",
-	"bin": {
-		"rbxtsc-dev": "rbxtsc-dev.js"
-	}
-}

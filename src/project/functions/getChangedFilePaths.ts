@@ -46,7 +46,9 @@ export function getChangedFilePaths(program: ts.BuilderProgram, pathHints?: Arra
 			search(getCanonicalFileName(hint));
 		}
 	} else {
-		buildState.changedFilesSet?.forEach((_, fileName) => search(fileName));
+		buildState.changedFilesSet?.forEach((_, fileName) => {
+			search(fileName);
+		});
 		buildState.changedFilesSet?.clear();
 	}
 

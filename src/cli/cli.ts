@@ -1,46 +1,23 @@
 #!/usr/bin/env node
 
-import { CLIError } from 'cli/errors/CLIError';
-import { LogService } from 'shared/classes/LogService';
-import { COMPILER_VERSION, PACKAGE_ROOT } from 'shared/constants';
-import { hideBin } from 'yargs/helpers';
-import yargs from 'yargs/yargs';
+import { defineCommand, runMain } from 'citty';
+import { buildArgs, buildCommand } from 'cli/commands/build';
+import { COMPILER_VERSION } from 'shared/constants';
 
-const cli = yargs(hideBin(process.argv));
+const mainCommand = defineCommand({
+	meta: {
+		name: 'rbxtsc',
+		version: COMPILER_VERSION,
+		description: 'roblox-ts - A TypeScript-to-Luau Compiler for Roblox',
+	},
 
-cli
-	// help
-	.usage('roblox-ts - A TypeScript-to-Luau Compiler for Roblox')
-	.help('help')
-	.alias('h', 'help')
-	.describe('help', 'show help information')
+	args: buildArgs,
 
-	// version
-	.version(COMPILER_VERSION)
-	.alias('v', 'version')
-	.describe('version', 'show version information')
+	subCommands: {
+		build: buildCommand,
+	},
 
-	// commands
-	.commandDir(`${PACKAGE_ROOT}/out/cli/commands`)
+	default: 'build',
+});
 
-	// options
-	.recommendCommands()
-	.strict()
-	.wrap(cli.terminalWidth())
-
-	// execute
-	// .fail() is necessary to properly `.toString()` custom error objects like CLIError
-	.fail((str) => {
-		process.exitCode = 1;
-		if (str) {
-			LogService.fatal(str);
-		}
-	})
-	.parseAsync()
-	.catch((e) => {
-		if (e instanceof CLIError) {
-			e.log();
-		} else {
-			throw e;
-		}
-	});
+runMain(mainCommand);

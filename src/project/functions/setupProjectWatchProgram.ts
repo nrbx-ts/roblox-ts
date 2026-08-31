@@ -1,6 +1,6 @@
+import fs from 'node:fs';
+import watcher from '@parcel/watcher';
 import type { PathTranslator } from '@roblox-ts/path-translator';
-import chokidar, { type ChokidarOptions } from 'chokidar';
-import fs from 'fs-extra';
 import type { ProjectData } from 'project';
 import { checkFileName } from 'project/functions/checkFileName';
 import { cleanup } from 'project/functions/cleanup';
@@ -21,19 +21,11 @@ import { assert } from 'shared/util/assert';
 import { getRootDirs } from 'shared/util/getRootDirs';
 import ts from 'typescript';
 
-const CHOKIDAR_OPTIONS: ChokidarOptions = {
-	awaitWriteFinish: {
-		pollInterval: 10,
-		stabilityThreshold: 50,
-	},
-	ignoreInitial: true,
-};
-
 function fixSlashes(fsPath: string) {
 	return fsPath.replace(/\\/g, '/');
 }
 
-export function setupProjectWatchProgram(data: ProjectData, usePolling: boolean) {
+export async function setupProjectWatchProgram(data: ProjectData) {
 	const { fileNames, options } = getParsedCommandLine(data);
 	const fileNamesSet = new Set(fileNames);
 
@@ -219,17 +211,25 @@ export function setupProjectWatchProgram(data: ProjectData, usePolling: boolean)
 		openEventCollection();
 	}
 
-	const chokidarOptions: ChokidarOptions = { ...CHOKIDAR_OPTIONS, usePolling };
-
-	chokidar
-		.watch(getRootDirs(options), chokidarOptions)
-		.on('add', collectAddEvent)
-		.on('addDir', collectAddEvent)
-		.on('change', collectChangeEvent)
-		.on('unlink', collectDeleteEvent)
-		.on('unlinkDir', collectDeleteEvent)
-		.once('ready', () => {
-			reportText('Starting compilation in watch mode...');
-			reportEmitResult(runCompile());
+	for (const rootDir of getRootDirs(options)) {
+		await watcher.subscribe(rootDir, (err, events) => {
+			if (err) return;
+			for (const event of events) {
+				switch (event.type) {
+					case 'create':
+						collectAddEvent(event.path);
+						break;
+					case 'update':
+						collectChangeEvent(event.path);
+						break;
+					case 'delete':
+						collectDeleteEvent(event.path);
+						break;
+				}
+			}
 		});
+	}
+
+	reportText('Starting compilation in watch mode...');
+	reportEmitResult(runCompile());
 }
