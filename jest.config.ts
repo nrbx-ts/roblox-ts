@@ -3,26 +3,26 @@ import type { Config } from "jest";
 const config: Config = {
 	preset: "ts-jest",
 	testEnvironment: "node",
-	testRegex: "/src/CLI/test\\.ts$",
+	testRegex: "/src/cli/test\\.ts$",
 	modulePathIgnorePatterns: ["<rootDir>/out/"],
 	moduleNameMapper: {
-		"^(Project|Shared|CLI|TSTransformer)/(.*)$": "<rootDir>/src/$1/$2",
-		"^(Project|Shared|CLI|TSTransformer)$": "<rootDir>/src/$1",
+		"^(project|shared|cli|ts-transformer)/(.*)$": "<rootDir>/src/$1/$2",
+		"^(project|shared|cli|ts-transformer)$": "<rootDir>/src/$1",
 	},
 	collectCoverageFrom: [
 		"src/**/*.ts",
-		"!src/CLI/**",
-		"!src/Project/**",
-		"!src/Shared/classes/LogService.ts",
-		"!src/TSTransformer/util/getFlags.ts",
-		"!src/TSTransformer/util/getKindName.ts",
-		"!src/TSTransformer/util/jsx/constants.ts",
+		"!src/cli/**",
+		"!src/project/**",
+		"!src/shared/classes/LogService.ts",
+		"!src/ts-transformer/util/getFlags.ts",
+		"!src/ts-transformer/util/getKindName.ts",
+		"!src/ts-transformer/util/jsx/constants.ts",
 	],
 	coverageDirectory: "coverage",
 	coverageReporters: ["lcov", "text"],
 	verbose: true,
 	transform: {
-		"^.+\\.tsx?$": ["ts-jest", { tsconfig: "src/CLI/tsconfig.json" }],
+		"^.+\\.tsx?$": ["ts-jest", { tsconfig: "src/cli/tsconfig.json" }],
 	},
 };
 

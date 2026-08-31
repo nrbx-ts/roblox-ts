@@ -6,9 +6,9 @@
 		"outDir": "out"
 	},
 	"references": [
-		{ "path": "./src/Shared" },
-		{ "path": "./src/CLI" },
-		{ "path": "./src/Project" },
-		{ "path": "./src/TSTransformer" }
+		{ "path": "./src/shared" },
+		{ "path": "./src/cli" },
+		{ "path": "./src/project" },
+		{ "path": "./src/ts-transformer" }
 	]
 }
