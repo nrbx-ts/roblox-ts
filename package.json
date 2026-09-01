@@ -1,6 +1,6 @@
 {
 	"name": "@nrbx/roblox-ts",
-	"version": "4.0.3",
+	"version": "4.0.8",
 	"description": "A fork of a TypeScript-to-Luau Compiler for Roblox with TS7 upgrades.",
 	"main": "out/cli/index.js",
 	"repository": {

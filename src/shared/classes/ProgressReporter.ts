@@ -56,18 +56,27 @@ function ansiColor(text: string, code: number, level: 0 | 1 | 3) {
 	return level === 0 ? text : `${ESC}${code}m${text}${ESC}0m`;
 }
 
-const BAR_LENGTH = 25;
-const BLOCK = '█';
+// A braille cell is roughly half the width of a full block, so use more of them
+// to keep the bar a similar on-screen size.
+const BRAILLE_BAR_LENGTH = 40;
+const BRAILLE_DOTS_PER_CELL = 8;
+// Progressive braille cell states, from empty to full (⣿), built up dot by dot.
+// Dots are added bottom-to-top within the left column, then the right column,
+// so the bar reads like a building being erected left-to-right.
+const BRAILLE_STATES = Array.from({ length: BRAILLE_DOTS_PER_CELL + 1 }, (_, dots) =>
+	String.fromCodePoint(0x2800 + ((1 << dots) - 1))
+);
 // Cap redraws at ~30fps so large projects don't flood the terminal with writes.
 const RENDER_INTERVAL_MS = 33;
 
-function renderBar(progress: number, color: string, level: 0 | 1 | 3) {
-	const filled = Math.round((progress / 100) * BAR_LENGTH);
-	const fg = colorize(BLOCK, color, level);
-	const bg = ansiColor(BLOCK, 90, level);
+function renderBrailleBar(progress: number, color: string, level: 0 | 1 | 3) {
+	const totalDots = BRAILLE_BAR_LENGTH * BRAILLE_DOTS_PER_CELL;
+	const filledDots = Math.round((progress / 100) * totalDots);
 	let bar = '';
-	for (let i = 0; i < BAR_LENGTH; i++) {
-		bar += i < filled ? fg : bg;
+	for (let i = 0; i < BRAILLE_BAR_LENGTH; i++) {
+		const dots = Math.max(0, Math.min(BRAILLE_DOTS_PER_CELL, filledDots - i * BRAILLE_DOTS_PER_CELL));
+		const glyph = BRAILLE_STATES[dots];
+		bar += dots === 0 ? ansiColor(glyph, 90, level) : colorize(glyph, color, level);
 	}
 	return bar;
 }
@@ -167,26 +176,31 @@ interface ProgressStage extends Required<ProgressStageUpdate> {
 const BULLET = '●';
 const TICK = '✔';
 const CROSS = '✖';
-const SPINNER = '◌';
+// Rotating braille spinner, shown next to the title while any stage is active.
+const SPINNER_FRAMES = ['⠋', '⠙', '⠹', '⠸', '⠼', '⠴', '⠦', '⠧', '⠇', '⠏'];
+const SPINNER_INTERVAL_MS = 80;
+// Indeterminate stages get a looping "building" animation: the bar fills from
+// left to right over this many milliseconds, then starts building again.
+const INDETERMINATE_INTERVAL_MS = 20;
 
-/**
- * A tsc-progress style reporter that displays the different stages of the
- * build as a set of progress bars, e.g.:
- *
- *   ● RBXTSC
- *   ● program   creating program...
- *   ● transform ██████████████░░░░░░░░░░░  45%  running transformers
- *   ● compile   ████████████████████████░  95%  (src/Main.server.ts)
- *   ● write     ░░░░░░░░░░░░░░░░░░░░░░░░░   0%
- *
- * On success `finish()` replaces the bars with a summary block, separated
- * from surrounding output by a blank line, with the lines tab-indented and
- * rendered in dark grey:
- *
- *   ✔ RBXTSC
- *   \tCompiled 12 files successfully in 193ms
- *   \tFound 0 errors, watching for file changes.
- */
+function getSpinnerFrame() {
+	return SPINNER_FRAMES[Math.floor(Date.now() / SPINNER_INTERVAL_MS) % SPINNER_FRAMES.length];
+}
+
+function renderIndeterminateBar(color: string, level: 0 | 1 | 3) {
+	const phase = (Date.now() / INDETERMINATE_INTERVAL_MS) % 100;
+	return renderBrailleBar(phase, color, level);
+}
+
+const bold = {
+	open: '\u001B[1m',
+	close: '\u001B[22m',
+};
+
+function applyBold(text: string) {
+	return bold.open + text + bold.close;
+}
+
 export class ProgressReporter {
 	private readonly colorLevel: 0 | 1 | 3;
 	private readonly enabled: boolean;
@@ -196,9 +210,10 @@ export class ProgressReporter {
 	private readonly summaryLines: string[] = [];
 	private finished = false;
 	private lastRenderTime = 0;
+	private animationTimer: NodeJS.Timeout | undefined;
 
 	constructor(
-		private readonly title = 'RBXTSC',
+		private readonly title = applyBold('RBXTSC'),
 		private readonly color = '#3156ff'
 	) {
 		this.colorLevel = getColorSupport();
@@ -254,29 +269,29 @@ export class ProgressReporter {
 	finish() {
 		if (!this.enabled || this.finished) return;
 		this.finished = true;
+		if (this.animationTimer) {
+			clearInterval(this.animationTimer);
+			this.animationTimer = undefined;
+		}
 		const prevLineCount = this.logUpdate.prevLineCount;
 		const extraLines = this.logUpdate.extraLines;
 		this.logUpdate.stopListening();
 		this.logUpdate.reset();
-		// Erase the progress block, then write back anything that was printed
-		// over it (warnings, diagnostics, etc.) so it stays on screen.
+
 		let output = `${ansiEraseLines(prevLineCount)}${extraLines}`;
 		if (this.summaryLines.length > 0) {
-			if (extraLines.length > 0 && !extraLines.endsWith('\n')) {
-				output += '\n';
-			}
-			// Blank line on either side separates the block from surrounding output.
-			output += `\n${colorize(TICK, this.color, this.colorLevel)} ${colorize(this.title, this.color, this.colorLevel)}\n`;
-			for (const line of this.summaryLines) {
-				output += `\t\t${ansiColor(line, 90, this.colorLevel)}\n`;
-			}
+			if (extraLines.length > 0 && !extraLines.endsWith('\n')) output += '\n';
+			output += `\n    ${colorize(TICK, this.color, this.colorLevel)} ${colorize(this.title, this.color, this.colorLevel)}\n`;
+			for (const line of this.summaryLines) output += `        ${ansiColor(line, 90, this.colorLevel)}\n`;
 			output += '\n';
 		}
+
 		this.logUpdate.write(output);
 	}
 
 	private render(force = false) {
 		if (!this.enabled || this.finished) return;
+		this.startAnimationLoop();
 		const now = Date.now();
 		if (!force && now - this.lastRenderTime < RENDER_INTERVAL_MS) return;
 		this.lastRenderTime = now;
@@ -284,13 +299,17 @@ export class ProgressReporter {
 		const overall = Math.round(
 			this.stages.reduce((sum, stage) => sum + Math.max(stage.progress, 0), 0) / this.stages.length
 		);
-		const header = `${colorize(BULLET, this.color, this.colorLevel)} ${colorize(this.title, this.color, this.colorLevel)}  ${ansiColor(
+		const spinning = this.stages.some((stage) => !stage.done);
+		const icon = spinning
+			? colorize(getSpinnerFrame(), this.color, this.colorLevel)
+			: colorize(BULLET, this.color, this.colorLevel);
+		const header = `\n    ${icon} ${colorize(this.title, this.color, this.colorLevel)}  ${ansiColor(
 			`${overall}%`,
 			90,
 			this.colorLevel
 		)}`;
 		const body = this.stages.map((stage) => this.renderStage(stage, maxNameLength)).join('\n');
-		this.logUpdate.render(`${header}\n${body}`);
+		this.logUpdate.render(`${header}\n${body}\n`);
 	}
 
 	private renderStage(stage: ProgressStage, maxNameLength: number) {
@@ -299,19 +318,28 @@ export class ProgressReporter {
 		if (stage.hasErrors) {
 			const icon = ansiColor(CROSS, 31, this.colorLevel);
 			const message = ansiColor(stage.message || 'failed', 31, this.colorLevel);
-			return `${icon} ${name}  ${message}`;
+			return `        ${icon} ${name}  ${message}`;
 		}
 		if (stage.done) {
 			const icon = colorize(TICK, this.color, this.colorLevel);
 			const message = ansiColor(stage.message || 'done', 90, this.colorLevel);
-			return `${icon} ${name}  ${message}`;
+			return `        ${icon} ${name}  ${message}`;
 		}
 		if (stage.progress < 0) {
-			return `${bullet} ${name}  ${ansiColor(stage.message || SPINNER, 90, this.colorLevel)}`;
+			const bar = renderIndeterminateBar(this.color, this.colorLevel);
+			const message = stage.message ? `  ${ansiColor(stage.message, 90, this.colorLevel)}` : '';
+			return `        ${bullet} ${name} ${bar}${message}`;
 		}
-		const bar = renderBar(stage.progress, this.color, this.colorLevel);
+		const bar = renderBrailleBar(stage.progress, this.color, this.colorLevel);
 		const percent = `${Math.round(stage.progress)}%`.padStart(4);
 		const detail = stage.detail ? `  ${ansiColor(stage.detail, 90, this.colorLevel)}` : '';
-		return `${bullet} ${name} ${bar} ${percent}${detail}`;
+		return `        ${bullet} ${name} ${bar} ${percent}${detail}`;
+	}
+
+	private startAnimationLoop() {
+		if (this.animationTimer) return;
+		this.animationTimer = setInterval(() => this.render(), RENDER_INTERVAL_MS);
+		// Don't keep the process alive just to animate the progress bars.
+		this.animationTimer.unref();
 	}
 }
