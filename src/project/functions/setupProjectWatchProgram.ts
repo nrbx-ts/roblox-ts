@@ -15,6 +15,7 @@ import { getParsedCommandLine } from 'project/functions/getParsedCommandLine';
 import { tryRemoveOutput } from 'project/functions/tryRemoveOutput';
 import { isCompilableFile } from 'project/util/isCompilableFile';
 import { walkDirectorySync } from 'project/util/walkDirectorySync';
+import { ProgressReporter } from 'shared/classes/ProgressReporter';
 import { DTS_EXT } from 'shared/constants';
 import { DiagnosticError } from 'shared/errors/DiagnosticError';
 import { assert } from 'shared/util/assert';
@@ -69,14 +70,20 @@ export async function setupProjectWatchProgram(data: ProjectData) {
 		pathTranslator = createPathTranslator(program, data);
 	}
 
-	function runInitialCompile() {
+	function runInitialCompile(reporter: ProgressReporter) {
+		const programStage = reporter.addStage('program');
+		const copyStage = reporter.addStage('copy');
+		reporter.update(programStage, { progress: -1, message: 'creating program...' });
 		refreshProgram();
+		reporter.complete(programStage, 'program created');
 		assert(program && pathTranslator);
+		reporter.update(copyStage, { progress: -1, message: 'copying files...' });
 		cleanup(pathTranslator);
 		copyInclude(data);
 		copyFiles(data, pathTranslator, new Set(getRootDirs(options)));
+		reporter.complete(copyStage, 'files copied');
 		const sourceFiles = getChangedSourceFiles(program);
-		const emitResult = compileFiles(program.getProgram(), data, pathTranslator, sourceFiles);
+		const emitResult = compileFiles(program.getProgram(), data, pathTranslator, sourceFiles, reporter);
 		if (!emitResult.emitSkipped) {
 			initialCompileCompleted = true;
 		}
@@ -86,7 +93,15 @@ export async function setupProjectWatchProgram(data: ProjectData) {
 	const filesToCompile = new Set<string>();
 	const filesToCopy = new Set<string>();
 	const filesToClean = new Set<string>();
-	function runIncrementalCompile(additions: Set<string>, changes: Set<string>, removals: Set<string>): ts.EmitResult {
+	function runIncrementalCompile(
+		additions: Set<string>,
+		changes: Set<string>,
+		removals: Set<string>,
+		reporter: ProgressReporter
+	): ts.EmitResult {
+		const programStage = reporter.addStage('program');
+		const copyStage = reporter.addStage('copy');
+		reporter.update(programStage, { progress: -1, message: 'creating program...' });
 		for (const fsPath of additions) {
 			if (fs.statSync(fsPath).isDirectory()) {
 				walkDirectorySync(fsPath, (item) => {
@@ -133,14 +148,16 @@ export async function setupProjectWatchProgram(data: ProjectData) {
 		}
 
 		refreshProgram();
+		reporter.complete(programStage, 'program created');
 		assert(program && pathTranslator);
 		const sourceFiles = getChangedSourceFiles(program, options.incremental ? undefined : [...filesToCompile]);
-		const emitResult = compileFiles(program.getProgram(), data, pathTranslator, sourceFiles);
+		const emitResult = compileFiles(program.getProgram(), data, pathTranslator, sourceFiles, reporter);
 		if (emitResult.emitSkipped) {
 			// exit before copying to prevent half-updated out directory
 			return emitResult;
 		}
 
+		reporter.update(copyStage, { progress: -1, message: 'copying files...' });
 		for (const fsPath of filesToClean) {
 			tryRemoveOutput(pathTranslator, pathTranslator.getOutputPath(fsPath));
 			if (options.declaration) {
@@ -150,6 +167,7 @@ export async function setupProjectWatchProgram(data: ProjectData) {
 		for (const fsPath of filesToCopy) {
 			copyItem(data, pathTranslator, fsPath);
 		}
+		reporter.complete(copyStage, 'files copied');
 
 		filesToCompile.clear();
 		filesToCopy.clear();
@@ -159,9 +177,10 @@ export async function setupProjectWatchProgram(data: ProjectData) {
 	}
 
 	function runCompile() {
+		const reporter = new ProgressReporter();
 		try {
 			if (!initialCompileCompleted) {
-				return runInitialCompile();
+				return runInitialCompile(reporter);
 			} else {
 				const additions = filesToAdd;
 				const changes = filesToChange;
@@ -169,7 +188,7 @@ export async function setupProjectWatchProgram(data: ProjectData) {
 				filesToAdd = new Set();
 				filesToChange = new Set();
 				filesToDelete = new Set();
-				return runIncrementalCompile(additions, changes, removals);
+				return runIncrementalCompile(additions, changes, removals, reporter);
 			}
 		} catch (e) {
 			if (e instanceof DiagnosticError) {
@@ -180,6 +199,8 @@ export async function setupProjectWatchProgram(data: ProjectData) {
 			} else {
 				throw e;
 			}
+		} finally {
+			reporter.finish();
 		}
 	}
 

@@ -1,0 +1,10 @@
+{
+	"extends": "./tsconfig.json",
+	"compilerOptions": {
+		"jsxFactory": "React.createElement",
+		"jsxFragmentFactory": "React.Fragment",
+		"rootDir": "src-react",
+		"outDir": "out-react"
+	},
+	"include": ["src-react"]
+}

@@ -13,6 +13,7 @@ import { createTransformerWatcher } from 'project/transformers/createTransformer
 import { getPluginConfigs } from 'project/transformers/getPluginConfigs';
 import { getCustomPreEmitDiagnostics } from 'project/util/getCustomPreEmitDiagnostics';
 import { LogService } from 'shared/classes/LogService';
+import { ProgressReporter } from 'shared/classes/ProgressReporter';
 import { ProjectType } from 'shared/constants';
 import type { ProjectData } from 'shared/types';
 import { assert } from 'shared/util/assert';
@@ -41,6 +42,33 @@ function emitResultFailure(messageText: string): ts.EmitResult {
 	};
 }
 
+function formatElapsed(ms: number) {
+	if (ms < 1000) {
+		return `${Math.round(ms)}ms`;
+	}
+	return `${(ms / 1000).toFixed(2)}s`;
+}
+
+/**
+ * A transformer that reports per-file progress back to the reporter, so the
+ * "transform" stage bar moves as plugins process each source file.
+ */
+function createProgressTransformer(
+	reporter: ProgressReporter,
+	stage: number,
+	total: number
+): ts.TransformerFactory<ts.SourceFile | ts.Bundle> {
+	let loaded = 0;
+	return () => (sourceFile) => {
+		loaded++;
+		reporter.update(stage, {
+			progress: (loaded / total) * 100,
+			detail: path.relative(process.cwd(), ts.isSourceFile(sourceFile) ? sourceFile.fileName : ''),
+		});
+		return sourceFile;
+	};
+}
+
 /**
  * 'transpiles' TypeScript project into a logically identical Luau project.
  *
@@ -50,9 +78,17 @@ export function compileFiles(
 	program: ts.Program,
 	data: ProjectData,
 	pathTranslator: PathTranslator,
-	sourceFiles: Array<ts.SourceFile>
+	sourceFiles: Array<ts.SourceFile>,
+	reporter?: ProgressReporter
 ): ts.EmitResult {
 	const compilerOptions = program.getCompilerOptions();
+
+	const ownsReporter = reporter === undefined;
+	reporter ??= new ProgressReporter();
+	const hasPlugins = compilerOptions.plugins !== undefined && compilerOptions.plugins.length > 0;
+	const transformStage = hasPlugins ? reporter.addStage('transform') : undefined;
+	const compileStage = reporter.addStage('compile');
+	const writeStage = reporter.addStage('write');
 
 	const multiTransformState = new MultiTransformState();
 
@@ -80,6 +116,7 @@ export function compileFiles(
 	const projectType = data.projectOptions.type ?? inferProjectType(data, rojoResolver);
 
 	if (projectType !== ProjectType.Package && data.rojoConfigPath === undefined) {
+		if (ownsReporter) reporter.finish();
 		return emitResultFailure('Non-package projects must have a Rojo project file!');
 	}
 
@@ -89,15 +126,21 @@ export function compileFiles(
 			path.join(data.projectOptions.includePath, 'RuntimeLib.lua')
 		);
 		if (!runtimeLibRbxPath) {
+			if (ownsReporter) reporter.finish();
 			return emitResultFailure('Rojo project contained no data for include folder!');
 		} else if (rojoResolver.getNetworkType(runtimeLibRbxPath) !== NetworkType.Unknown) {
+			if (ownsReporter) reporter.finish();
 			return emitResultFailure('Runtime library cannot be in a server-only or client-only container!');
 		} else if (rojoResolver.isIsolated(runtimeLibRbxPath)) {
+			if (ownsReporter) reporter.finish();
 			return emitResultFailure('Runtime library cannot be in an isolated container!');
 		}
 	}
 
-	if (DiagnosticService.hasErrors()) return { emitSkipped: true, diagnostics: DiagnosticService.flush() };
+	if (DiagnosticService.hasErrors()) {
+		if (ownsReporter) reporter.finish();
+		return { emitSkipped: true, diagnostics: DiagnosticService.flush() };
+	}
 
 	LogService.writeLineIfVerbose(`compiling as ${projectType}..`);
 
@@ -112,6 +155,8 @@ export function compileFiles(
 			const transformerList = createTransformerList(program, pluginConfigs, data.projectPath);
 			const transformers = flattenIntoTransformers(transformerList);
 			if (transformers.length > 0) {
+				assert(transformStage !== undefined);
+				transformers.push(createProgressTransformer(reporter, transformStage, sourceFiles.length));
 				const transformerWatcher = data.transformerWatcher ?? createTransformerWatcher(program);
 				data.transformerWatcher = transformerWatcher;
 				const { service, updateFile } = transformerWatcher;
@@ -142,11 +187,18 @@ export function compileFiles(
 				}
 
 				proxyProgram = service.getProgram()!;
+				reporter.complete(transformStage, `transformed ${sourceFiles.length} files`);
+			} else {
+				assert(transformStage !== undefined);
+				reporter.complete(transformStage, 'no transformers found');
 			}
 		});
 	}
 
-	if (DiagnosticService.hasErrors()) return { emitSkipped: true, diagnostics: DiagnosticService.flush() };
+	if (DiagnosticService.hasErrors()) {
+		if (ownsReporter) reporter.finish();
+		return { emitSkipped: true, diagnostics: DiagnosticService.flush() };
+	}
 
 	const typeChecker = proxyProgram.getTypeChecker();
 	const services = createTransformServices(typeChecker);
@@ -154,6 +206,10 @@ export function compileFiles(
 	for (let i = 0; i < sourceFiles.length; i++) {
 		const sourceFile = proxyProgram.getSourceFile(sourceFiles[i].fileName);
 		assert(sourceFile);
+		reporter.update(compileStage, {
+			progress: ((i + 1) / sourceFiles.length) * 100,
+			detail: path.relative(process.cwd(), sourceFile.fileName),
+		});
 		const progress = `${i + 1}/${sourceFiles.length}`.padStart(progressMaxLength);
 		benchmarkIfVerbose(`${progress} compile ${path.relative(process.cwd(), sourceFile.fileName)}`, () => {
 			DiagnosticService.addDiagnostics(ts.getPreEmitDiagnostics(proxyProgram, sourceFile));
@@ -185,7 +241,12 @@ export function compileFiles(
 		});
 	}
 
-	if (DiagnosticService.hasErrors()) return { emitSkipped: true, diagnostics: DiagnosticService.flush() };
+	if (DiagnosticService.hasErrors()) {
+		if (ownsReporter) reporter.finish();
+		return { emitSkipped: true, diagnostics: DiagnosticService.flush() };
+	}
+
+	reporter.complete(compileStage, `compiled ${sourceFiles.length} files`);
 
 	const emittedFiles: string[] = [];
 	if (fileWriteQueue.length > 0) {
@@ -193,7 +254,11 @@ export function compileFiles(
 			const afterDeclarations = compilerOptions.declaration
 				? [transformTypeReferenceDirectives, transformPathsTransformer(program, {})]
 				: undefined;
-			for (const { sourceFile, source } of fileWriteQueue) {
+			for (let i = 0; i < fileWriteQueue.length; i++) {
+				reporter.update(writeStage, {
+					progress: ((i + 1) / fileWriteQueue.length) * 100,
+				});
+				const { sourceFile, source } = fileWriteQueue[i];
 				const outPath = pathTranslator.getOutputPath(sourceFile.fileName);
 				if (
 					!data.projectOptions.writeOnlyChanged ||
@@ -212,6 +277,14 @@ export function compileFiles(
 	}
 
 	program.emitBuildInfo();
+
+	reporter.complete(writeStage, `wrote ${emittedFiles.length} files`);
+
+	if (reporter.isEnabled) {
+		LogService.writeLine(`Compiled ${sourceFiles.length} files in ${formatElapsed(reporter.getElapsedMs())}`);
+	}
+
+	if (ownsReporter) reporter.finish();
 
 	return { emittedFiles, emitSkipped: false, diagnostics: DiagnosticService.flush() };
 }

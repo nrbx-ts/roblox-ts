@@ -20,7 +20,9 @@ export function transformJsx(
 	const jsxFactoryEntity = state.resolver.getJsxFactoryEntity(node);
 	assert(jsxFactoryEntity, 'Expected jsxFactoryEntity to be defined');
 
-	const createElementExpression = convertToIndexableExpression(transformEntityName(state, jsxFactoryEntity));
+	const createElementExpression = convertToIndexableExpression(
+		transformEntityName(state, jsxFactoryEntity, node.getSourceFile())
+	);
 
 	const tagNameExp = transformJsxTagName(state, tagName);
 

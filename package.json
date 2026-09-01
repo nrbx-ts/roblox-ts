@@ -1,6 +1,6 @@
 {
 	"name": "@nrbx/roblox-ts",
-	"version": "4.0.0",
+	"version": "4.0.1",
 	"description": "A fork of a TypeScript-to-Luau Compiler for Roblox with TS7 upgrades.",
 	"main": "out/cli/index.js",
 	"repository": {
@@ -39,11 +39,6 @@
 		"@vitest/coverage-v8": "^4.1.11",
 		"vitest": "^4.1.11"
 	},
-	"files": [
-		"out",
-		"include",
-		"!**/*.js.map",
-		"!**/*.tsbuildinfo"
-	],
+	"files": ["out", "include", "!**/*.js.map", "!**/*.tsbuildinfo"],
 	"packageManager": "yarn@4.18.0"
 }

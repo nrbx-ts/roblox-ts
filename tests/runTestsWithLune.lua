@@ -37,6 +37,14 @@ roblox.implementMethod("TestService", "Error", function(self, description: strin
 	stdio.ewrite(`{description}\n`)
 end)
 
+-- @rbxts/react's tags.lua resolves class names via ReflectionService:GetClasses()
+roblox.implementMethod("ReflectionService", "GetClasses", function()
+	return {
+		{ Name = "Frame" },
+		{ Name = "TextLabel" },
+	}
+end)
+
 -- Promise.lua indexes RunService.Heartbeat, but only uses it in Promise.defer and Promise.delay
 roblox.implementProperty("RunService", "Heartbeat", function()
 	return {}

@@ -11,6 +11,9 @@
 					"$className": "Folder",
 					"@rbxts": {
 						"$path": "node_modules/@rbxts"
+					},
+					"@rbxts-js": {
+						"$path": "node_modules/@rbxts-js"
 					}
 				}
 			}
@@ -21,7 +24,10 @@
 				"$path": "out/main.server.luau"
 			},
 			"tests": {
-				"$path": "out/tests"
+				"$path": "out/tests",
+				"react": {
+					"$path": "out-react/tests"
+				}
 			},
 			"diagnostics": {
 				"$path": "out/diagnostics"

@@ -12,6 +12,7 @@ import { createProjectProgram } from 'project/functions/createProjectProgram';
 import { getChangedSourceFiles } from 'project/functions/getChangedSourceFiles';
 import { setupProjectWatchProgram } from 'project/functions/setupProjectWatchProgram';
 import { LogService } from 'shared/classes/LogService';
+import { ProgressReporter } from 'shared/classes/ProgressReporter';
 import { DEFAULT_PROJECT_OPTIONS, ProjectType } from 'shared/constants';
 import { LoggableError } from 'shared/errors/LoggableError';
 import type { ProjectOptions } from 'shared/types';
@@ -134,22 +135,36 @@ export const buildCommand = defineCommand({
 			if (projectOptions.watch) {
 				await setupProjectWatchProgram(data);
 			} else {
-				const program = createProjectProgram(data);
-				const pathTranslator = createPathTranslator(program, data);
-				cleanup(pathTranslator);
-				copyInclude(data);
-				copyFiles(data, pathTranslator, new Set(getRootDirs(program.getCompilerOptions())));
-				const emitResult = compileFiles(
-					program.getProgram(),
-					data,
-					pathTranslator,
-					getChangedSourceFiles(program)
-				);
-				for (const diagnostic of emitResult.diagnostics) {
-					diagnosticReporter(diagnostic);
-				}
-				if (hasErrors(emitResult.diagnostics)) {
-					process.exitCode = 1;
+				const reporter = new ProgressReporter();
+				try {
+					const programStage = reporter.addStage('program');
+					const copyStage = reporter.addStage('copy');
+					reporter.update(programStage, { progress: -1, message: 'creating program...' });
+					const program = createProjectProgram(data);
+					reporter.complete(programStage, 'program created');
+
+					const pathTranslator = createPathTranslator(program, data);
+					reporter.update(copyStage, { progress: -1, message: 'copying files...' });
+					cleanup(pathTranslator);
+					copyInclude(data);
+					copyFiles(data, pathTranslator, new Set(getRootDirs(program.getCompilerOptions())));
+					reporter.complete(copyStage, 'files copied');
+
+					const emitResult = compileFiles(
+						program.getProgram(),
+						data,
+						pathTranslator,
+						getChangedSourceFiles(program),
+						reporter
+					);
+					for (const diagnostic of emitResult.diagnostics) {
+						diagnosticReporter(diagnostic);
+					}
+					if (hasErrors(emitResult.diagnostics)) {
+						process.exitCode = 1;
+					}
+				} finally {
+					reporter.finish();
 				}
 			}
 		} catch (e) {

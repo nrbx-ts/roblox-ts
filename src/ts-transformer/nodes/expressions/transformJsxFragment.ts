@@ -10,7 +10,8 @@ export function transformJsxFragment(state: TransformState, node: ts.JsxFragment
 	const jsxFactoryEntity = state.resolver.getJsxFactoryEntity(node);
 	assert(jsxFactoryEntity, 'Expected jsxFactoryEntity to be defined');
 
-	const createElementExpression = convertToIndexableExpression(transformEntityName(state, jsxFactoryEntity));
+	const sourceFile = node.getSourceFile();
+	const createElementExpression = convertToIndexableExpression(transformEntityName(state, jsxFactoryEntity, sourceFile));
 
 	// getJsxFragmentFactoryEntity() doesn't seem to default to "Fragment"..
 	// but the typechecker does, so we should follow that behavior
@@ -19,7 +20,7 @@ export function transformJsxFragment(state: TransformState, node: ts.JsxFragment
 		ts.parseIsolatedEntityName('Fragment', ts.ScriptTarget.ESNext);
 	assert(jsxFragmentFactoryEntity, 'Unable to find valid jsxFragmentFactoryEntity');
 
-	const args = [transformEntityName(state, jsxFragmentFactoryEntity)];
+	const args = [transformEntityName(state, jsxFragmentFactoryEntity, sourceFile)];
 
 	const transformedChildren = transformJsxChildren(state, node.children);
 

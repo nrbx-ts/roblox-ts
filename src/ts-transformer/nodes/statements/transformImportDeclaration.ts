@@ -5,17 +5,32 @@ import type { TransformState } from 'ts-transformer';
 import { transformVariable } from 'ts-transformer/nodes/statements/transformVariableStatement';
 import { cleanModuleName } from 'ts-transformer/util/cleanModuleName';
 import { createImportExpression } from 'ts-transformer/util/createImportExpression';
+import { getJsxFactoryRootNames } from 'ts-transformer/util/getJsxFactoryRootNames';
 import { getOriginalSymbolOfNode } from 'ts-transformer/util/getOriginalSymbolOfNode';
 import { getSourceFileFromModuleSpecifier } from 'ts-transformer/util/getSourceFileFromModuleSpecifier';
 import { isSymbolOfValue } from 'ts-transformer/util/isSymbolOfValue';
 import * as ts from 'typescript/sync';
+
+function isReferencedAlias(state: TransformState, node: ts.ImportClause | ts.ImportSpecifier) {
+	if (state.resolver.isReferencedAliasDeclaration(node)) {
+		return true;
+	}
+	// TS7's resolver doesn't count the JSX factory as a reference, so a module imported solely for
+	// use as the JSX factory (e.g. `import React from "@rbxts/react"`) would otherwise be dropped
+	// even though the emitted JSX references it.
+	const name = node.name;
+	if (name && getJsxFactoryRootNames(state, node.getSourceFile()).has(name.text)) {
+		return true;
+	}
+	return false;
+}
 
 function countImportExpUses(state: TransformState, importClause: ts.ImportClause) {
 	let uses = 0;
 
 	if (importClause.name) {
 		const symbol = getOriginalSymbolOfNode(state.typeChecker, importClause.name);
-		if (state.resolver.isReferencedAliasDeclaration(importClause) && (!symbol || isSymbolOfValue(symbol))) {
+		if (isReferencedAlias(state, importClause) && (!symbol || isSymbolOfValue(symbol))) {
 			uses++;
 		}
 	}
@@ -26,7 +41,7 @@ function countImportExpUses(state: TransformState, importClause: ts.ImportClause
 		} else {
 			for (const element of importClause.namedBindings.elements) {
 				const symbol = getOriginalSymbolOfNode(state.typeChecker, element.name);
-				if (state.resolver.isReferencedAliasDeclaration(element) && (!symbol || isSymbolOfValue(symbol))) {
+				if (isReferencedAlias(state, element) && (!symbol || isSymbolOfValue(symbol))) {
 					uses++;
 				}
 			}
@@ -68,7 +83,7 @@ export function transformImportDeclaration(state: TransformState, node: ts.Impor
 		const importClauseName = importClause.name;
 		if (importClauseName) {
 			const symbol = getOriginalSymbolOfNode(state.typeChecker, importClauseName);
-			if (state.resolver.isReferencedAliasDeclaration(importClause) && (!symbol || isSymbolOfValue(symbol))) {
+			if (isReferencedAlias(state, importClause) && (!symbol || isSymbolOfValue(symbol))) {
 				const moduleFile = getSourceFileFromModuleSpecifier(state, node.moduleSpecifier);
 				const moduleSymbol = moduleFile && state.typeChecker.getSymbolAtLocation(moduleFile);
 				if (moduleSymbol && state.getModuleExports(moduleSymbol).some((v) => v.name === 'default')) {
@@ -102,7 +117,7 @@ export function transformImportDeclaration(state: TransformState, node: ts.Impor
 				for (const element of importClauseNamedBindings.elements) {
 					const symbol = getOriginalSymbolOfNode(state.typeChecker, element.name);
 					// check that import is referenced and has a value at runtime
-					if (state.resolver.isReferencedAliasDeclaration(element) && (!symbol || isSymbolOfValue(symbol))) {
+					if (isReferencedAlias(state, element) && (!symbol || isSymbolOfValue(symbol))) {
 						luau.list.pushList(
 							statements,
 							state.capturePrereqs(() =>
