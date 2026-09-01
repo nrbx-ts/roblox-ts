@@ -58,6 +58,8 @@ function ansiColor(text: string, code: number, level: 0 | 1 | 3) {
 
 const BAR_LENGTH = 25;
 const BLOCK = '█';
+// Cap redraws at ~30fps so large projects don't flood the terminal with writes.
+const RENDER_INTERVAL_MS = 33;
 
 function renderBar(progress: number, color: string, level: 0 | 1 | 3) {
 	const filled = Math.round((progress / 100) * BAR_LENGTH);
@@ -171,11 +173,17 @@ const SPINNER = '◌';
  * A tsc-progress style reporter that displays the different stages of the
  * build as a set of progress bars, e.g.:
  *
- *   ● ROBLOX-TS
+ *   ● RBXTSC
  *   ● program   creating program...
  *   ● transform ██████████████░░░░░░░░░░░  45%  running transformers
  *   ● compile   ████████████████████████░  95%  (src/Main.server.ts)
  *   ● write     ░░░░░░░░░░░░░░░░░░░░░░░░░   0%
+ *
+ * On success `finish()` replaces the bars with a summary block:
+ *
+ *   ✔ RBXTSC
+ *     Compiled 12 files successfully in 193ms
+ *     Found 0 errors, watching for file changes.
  */
 export class ProgressReporter {
 	private readonly colorLevel: 0 | 1 | 3;
@@ -183,10 +191,12 @@ export class ProgressReporter {
 	private readonly logUpdate = new LogUpdate();
 	private readonly stages: ProgressStage[] = [];
 	private readonly start = process.hrtime();
+	private readonly summaryLines: string[] = [];
 	private finished = false;
+	private lastRenderTime = 0;
 
 	constructor(
-		private readonly title = 'ROBLOX-TS',
+		private readonly title = 'RBXTSC',
 		private readonly color = '#3156ff'
 	) {
 		this.colorLevel = getColorSupport();
@@ -220,7 +230,7 @@ export class ProgressReporter {
 		if (stage.progress >= 100) {
 			stage.done = true;
 		}
-		this.render();
+		this.render(stage.hasErrors);
 	}
 
 	complete(index: number, message?: string) {
@@ -231,7 +241,12 @@ export class ProgressReporter {
 		if (message !== undefined) {
 			stage.message = message;
 		}
-		this.render();
+		this.render(true);
+	}
+
+	/** Queue a line to show in the summary block printed by `finish()`. */
+	addSummaryLine(line: string) {
+		this.summaryLines.push(line);
 	}
 
 	finish() {
@@ -243,11 +258,24 @@ export class ProgressReporter {
 		this.logUpdate.reset();
 		// Erase the progress block, then write back anything that was printed
 		// over it (warnings, diagnostics, etc.) so it stays on screen.
-		this.logUpdate.write(`${ansiEraseLines(prevLineCount)}${extraLines}`);
+		let output = `${ansiEraseLines(prevLineCount)}${extraLines}`;
+		if (this.summaryLines.length > 0) {
+			if (extraLines.length > 0 && !extraLines.endsWith('\n')) {
+				output += '\n';
+			}
+			output += `${colorize(TICK, this.color, this.colorLevel)} ${colorize(this.title, this.color, this.colorLevel)}\n`;
+			for (const line of this.summaryLines) {
+				output += `  ${line}\n`;
+			}
+		}
+		this.logUpdate.write(output);
 	}
 
-	private render() {
+	private render(force = false) {
 		if (!this.enabled || this.finished) return;
+		const now = Date.now();
+		if (!force && now - this.lastRenderTime < RENDER_INTERVAL_MS) return;
+		this.lastRenderTime = now;
 		const maxNameLength = Math.max(...this.stages.map((stage) => stage.name.length), 0);
 		const overall = Math.round(
 			this.stages.reduce((sum, stage) => sum + Math.max(stage.progress, 0), 0) / this.stages.length

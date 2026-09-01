@@ -54,12 +54,18 @@ export async function setupProjectWatchProgram(data: ProjectData) {
 		);
 	}
 
-	function reportEmitResult(emitResult: ts.EmitResult) {
+	function reportEmitResult({ emitResult, reporter }: { emitResult: ts.EmitResult; reporter: ProgressReporter }) {
 		for (const diagnostic of emitResult.diagnostics) {
 			diagnosticReporter(diagnostic);
 		}
 		const amtErrors = emitResult.diagnostics.filter((v) => v.category === ts.DiagnosticCategory.Error).length;
-		reportText(`Found ${amtErrors} error${amtErrors === 1 ? '' : 's'}. Watching for file changes.`);
+		const message = `Found ${amtErrors} error${amtErrors === 1 ? '' : 's'}, watching for file changes.`;
+		if (reporter.isEnabled && amtErrors === 0) {
+			reporter.addSummaryLine(message);
+		} else {
+			reportText(message);
+		}
+		reporter.finish();
 	}
 
 	let program: ts.EmitAndSemanticDiagnosticsBuilderProgram | undefined;
@@ -176,11 +182,11 @@ export async function setupProjectWatchProgram(data: ProjectData) {
 		return emitResult;
 	}
 
-	function runCompile() {
+	function runCompile(): { emitResult: ts.EmitResult; reporter: ProgressReporter } {
 		const reporter = new ProgressReporter();
 		try {
 			if (!initialCompileCompleted) {
-				return runInitialCompile(reporter);
+				return { emitResult: runInitialCompile(reporter), reporter };
 			} else {
 				const additions = filesToAdd;
 				const changes = filesToChange;
@@ -188,19 +194,15 @@ export async function setupProjectWatchProgram(data: ProjectData) {
 				filesToAdd = new Set();
 				filesToChange = new Set();
 				filesToDelete = new Set();
-				return runIncrementalCompile(additions, changes, removals, reporter);
+				return { emitResult: runIncrementalCompile(additions, changes, removals, reporter), reporter };
 			}
 		} catch (e) {
 			if (e instanceof DiagnosticError) {
-				return {
-					emitSkipped: true,
-					diagnostics: e.diagnostics,
-				};
+				return { emitResult: { emitSkipped: true, diagnostics: e.diagnostics }, reporter };
 			} else {
+				reporter.finish();
 				throw e;
 			}
-		} finally {
-			reporter.finish();
 		}
 	}
 

@@ -280,9 +280,9 @@ export function compileFiles(
 
 	reporter.complete(writeStage, `wrote ${emittedFiles.length} files`);
 
-	if (reporter.isEnabled) {
-		LogService.writeLine(`Compiled ${sourceFiles.length} files in ${formatElapsed(reporter.getElapsedMs())}`);
-	}
+	reporter.addSummaryLine(
+		`Compiled ${sourceFiles.length} files successfully in ${formatElapsed(reporter.getElapsedMs())}`
+	);
 
 	if (ownsReporter) reporter.finish();
 
