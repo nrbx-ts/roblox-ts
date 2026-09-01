@@ -4,7 +4,7 @@ import type { TransformState } from 'ts-transformer';
 import { cleanModuleName } from 'ts-transformer/util/cleanModuleName';
 import { createImportExpression } from 'ts-transformer/util/createImportExpression';
 import { isSymbolOfValue } from 'ts-transformer/util/isSymbolOfValue';
-import ts from 'typescript';
+import * as ts from 'typescript/sync';
 
 function isExportSpecifierValue(state: TransformState, element: ts.ExportSpecifier) {
 	if (element.isTypeOnly) {

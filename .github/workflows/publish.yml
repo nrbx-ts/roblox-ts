@@ -13,7 +13,6 @@ on:
 
 jobs:
   publish:
-    if: github.repository == 'roblox-ts/roblox-ts' && github.ref == 'refs/heads/master'
     runs-on: ubuntu-latest
     permissions:
       id-token: write # required for npm trusted publishing (OIDC)
@@ -21,13 +20,11 @@ jobs:
     steps:
       - name: Checkout Repository
         uses: actions/checkout@v7
-        with:
-          token: ${{ secrets.pat }}
 
       - name: Setup Node
         uses: actions/setup-node@v6
         with:
-          node-version: 24
+          node-version: 26
           registry-url: https://registry.npmjs.org
 
       - name: Update npm

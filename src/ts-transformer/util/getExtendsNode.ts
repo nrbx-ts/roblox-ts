@@ -1,4 +1,4 @@
-import ts from 'typescript';
+import * as ts from 'typescript/sync';
 
 export function getExtendsNode(node: ts.ClassLikeDeclaration) {
 	for (const clause of node.heritageClauses ?? []) {

@@ -1,4 +1,4 @@
-import ts from 'typescript';
+import * as ts from 'typescript/sync';
 
 export function arrayLikeExpressionContainsSpread(exp: ts.ArrayBindingPattern | ts.ArrayLiteralExpression): boolean {
 	for (const element of exp.elements) {

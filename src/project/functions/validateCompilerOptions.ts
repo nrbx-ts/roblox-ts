@@ -3,13 +3,13 @@ import path from 'node:path';
 import { DTS_EXT, NODE_MODULES, RBXTS_SCOPE } from 'shared/constants';
 import { ProjectError } from 'shared/errors/ProjectError';
 import { yellow } from 'shared/util/colors';
-import ts from 'typescript';
+import * as ts from 'typescript/sync';
 
 const ENFORCED_OPTIONS = {
 	target: ts.ScriptTarget.ESNext,
-	module: ts.ModuleKind.CommonJS,
+	module: ts.ModuleKind.NodeNext,
 	moduleDetection: ts.ModuleDetectionKind.Force,
-	moduleResolution: ts.ModuleResolutionKind.Node10,
+	moduleResolution: ts.ModuleResolutionKind.NodeNext,
 	noLib: true,
 	strict: true,
 	allowSyntheticDefaultImports: true,
@@ -47,7 +47,7 @@ export function validateCompilerOptions(opts: ts.CompilerOptions, projectPath: s
 	}
 
 	if (opts.module !== ENFORCED_OPTIONS.module) {
-		errors.push(`${y(`"module"`)} must be ${y(`commonjs`)}`);
+		errors.push(`${y(`"module"`)} must be ${y(`nodenext`)}`);
 	}
 
 	if (opts.moduleDetection !== ENFORCED_OPTIONS.moduleDetection) {
@@ -55,7 +55,7 @@ export function validateCompilerOptions(opts: ts.CompilerOptions, projectPath: s
 	}
 
 	if (opts.moduleResolution !== ENFORCED_OPTIONS.moduleResolution) {
-		errors.push(`${y(`"moduleResolution"`)} must be ${y(`"Node"`)}`);
+		errors.push(`${y(`"moduleResolution"`)} must be ${y(`"NodeNext"`)}`);
 	}
 
 	if (opts.allowSyntheticDefaultImports !== ENFORCED_OPTIONS.allowSyntheticDefaultImports) {
@@ -68,6 +68,10 @@ export function validateCompilerOptions(opts: ts.CompilerOptions, projectPath: s
 	}
 
 	for (const typesLocation of opts.types ?? []) {
+		// `"*"` means "include all packages under typeRoots" - nothing to verify here.
+		if (typesLocation === '*') {
+			continue;
+		}
 		// Technically checked to exist above
 		// But if that's an error, we still want this error too,
 		// To avoid "fix one error, get a new one on the next compile"

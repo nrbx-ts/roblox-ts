@@ -1,5 +1,5 @@
 import type { SourceFileWithTextRange } from 'shared/types';
-import type ts from 'typescript';
+import type * as ts from 'typescript/sync';
 
 export function createDiagnosticWithLocation(
 	id: number,
@@ -13,6 +13,7 @@ export function createDiagnosticWithLocation(
 			category,
 			code,
 			messageText,
+			text: messageText,
 			id,
 			file: node.getSourceFile(),
 			start: node.getStart(),
@@ -23,6 +24,7 @@ export function createDiagnosticWithLocation(
 			category,
 			code,
 			messageText,
+			text: messageText,
 			id,
 			file: node.sourceFile,
 			start: node.range.pos,

@@ -8,7 +8,7 @@ import { createImportExpression } from 'ts-transformer/util/createImportExpressi
 import { getOriginalSymbolOfNode } from 'ts-transformer/util/getOriginalSymbolOfNode';
 import { getSourceFileFromModuleSpecifier } from 'ts-transformer/util/getSourceFileFromModuleSpecifier';
 import { isSymbolOfValue } from 'ts-transformer/util/isSymbolOfValue';
-import ts from 'typescript';
+import * as ts from 'typescript/sync';
 
 function countImportExpUses(state: TransformState, importClause: ts.ImportClause) {
 	let uses = 0;

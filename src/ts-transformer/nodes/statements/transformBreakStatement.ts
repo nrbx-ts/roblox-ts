@@ -3,7 +3,7 @@ import { errors } from 'shared/diagnostics';
 import type { TransformState } from 'ts-transformer';
 import { DiagnosticService } from 'ts-transformer/classes/DiagnosticService';
 import { isBreakBlockedByTryStatement } from 'ts-transformer/util/isBlockedByTryStatement';
-import type ts from 'typescript';
+import type * as ts from 'typescript/sync';
 
 export function transformBreakStatement(state: TransformState, node: ts.BreakStatement) {
 	if (node.label) {

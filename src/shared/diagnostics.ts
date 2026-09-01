@@ -4,7 +4,7 @@ import { yellow } from 'shared/util/colors';
 import { createDiagnosticWithLocation } from 'shared/util/createDiagnosticWithLocation';
 import { issue } from 'shared/util/createGithubLink';
 import { createTextDiagnostic } from 'shared/util/createTextDiagnostic';
-import ts from 'typescript';
+import * as ts from 'typescript/sync';
 
 export type DiagnosticFactory<T extends Array<unknown> = []> = {
 	(node: ts.Node | SourceFileWithTextRange, ...context: T): ts.DiagnosticWithLocation;

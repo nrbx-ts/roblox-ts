@@ -1,4 +1,4 @@
-import type ts from 'typescript';
+import type * as ts from 'typescript/sync';
 
 export function hasMultipleDefinitions(symbol: ts.Symbol, filter: (declaration: ts.Declaration) => boolean): boolean {
 	let amtValueDefinitions = 0;

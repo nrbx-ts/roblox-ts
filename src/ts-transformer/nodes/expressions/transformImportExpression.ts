@@ -3,7 +3,7 @@ import { errors } from 'shared/diagnostics';
 import { DiagnosticService } from 'ts-transformer/classes/DiagnosticService';
 import type { TransformState } from 'ts-transformer/classes/TransformState';
 import { createImportExpression } from 'ts-transformer/util/createImportExpression';
-import ts from 'typescript';
+import * as ts from 'typescript/sync';
 
 export function transformImportExpression(state: TransformState, node: ts.CallExpression) {
 	const moduleSpecifier = node.arguments[0];

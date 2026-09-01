@@ -4,7 +4,7 @@ import type { TransformState } from 'ts-transformer/classes/TransformState';
 import { ensureTransformOrder } from 'ts-transformer/util/ensureTransformOrder';
 import { getKindName } from 'ts-transformer/util/getKindName';
 import { skipDownwards } from 'ts-transformer/util/traversal';
-import ts from 'typescript';
+import * as ts from 'typescript/sync';
 
 const OPERATOR_MAP = new Map<ts.SyntaxKind, string>([
 	// bitwise

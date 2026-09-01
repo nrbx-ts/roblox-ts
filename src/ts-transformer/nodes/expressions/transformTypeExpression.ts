@@ -1,6 +1,6 @@
 import type { TransformState } from 'ts-transformer';
 import { transformExpression } from 'ts-transformer/nodes/expressions/transformExpression';
-import type ts from 'typescript';
+import type * as ts from 'typescript/sync';
 
 export function transformTypeExpression(
 	state: TransformState,

@@ -8,7 +8,7 @@ import { addOneIfArrayType } from 'ts-transformer/util/addOneIfArrayType';
 import { convertToIndexableExpression } from 'ts-transformer/util/convertToIndexableExpression';
 import { ensureTransformOrder } from 'ts-transformer/util/ensureTransformOrder';
 import { skipDownwards } from 'ts-transformer/util/traversal';
-import ts from 'typescript';
+import * as ts from 'typescript/sync';
 
 export function transformWritableExpression(
 	state: TransformState,

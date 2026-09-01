@@ -4,7 +4,7 @@ import type { TransformState } from 'ts-transformer';
 import type { ConstructorMacro, MacroList } from 'ts-transformer/macros/types';
 import { transformExpression } from 'ts-transformer/nodes/expressions/transformExpression';
 import { ensureTransformOrder } from 'ts-transformer/util/ensureTransformOrder';
-import ts from 'typescript';
+import * as ts from 'typescript/sync';
 
 function wrapWeak(state: TransformState, node: ts.NewExpression, macro: ConstructorMacro) {
 	return luau.call(luau.globals.setmetatable, [

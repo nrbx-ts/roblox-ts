@@ -1,5 +1,5 @@
 import type { ProjectType } from 'shared/constants';
-import type ts from 'typescript';
+import type * as ts from 'typescript/sync';
 
 export interface ProjectOptions {
 	includePath: string;

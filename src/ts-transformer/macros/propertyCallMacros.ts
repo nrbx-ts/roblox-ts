@@ -7,7 +7,7 @@ import { isUsedAsStatement } from 'ts-transformer/util/isUsedAsStatement';
 import { offset } from 'ts-transformer/util/offset';
 import { isDefinitelyType, isNumberType, isStringType } from 'ts-transformer/util/types';
 import { valueToIdStr } from 'ts-transformer/util/valueToIdStr';
-import ts from 'typescript';
+import * as ts from 'typescript/sync';
 
 function makeMathMethod(operator: luau.BinaryOperator): PropertyCallMacro {
 	return (_state, _node, expression, args) => {

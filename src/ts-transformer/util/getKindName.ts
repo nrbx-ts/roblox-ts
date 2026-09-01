@@ -1,4 +1,4 @@
-import ts from 'typescript';
+import * as ts from 'typescript/sync';
 
 export function getKindName(kind: ts.SyntaxKind) {
 	if (kind === ts.SyntaxKind.FirstAssignment) return 'EqualsToken';

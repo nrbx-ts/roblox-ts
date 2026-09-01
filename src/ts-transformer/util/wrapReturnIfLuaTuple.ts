@@ -4,7 +4,7 @@ import { arrayBindingPatternContainsHoists } from 'ts-transformer/util/arrayBind
 import { arrayLikeExpressionContainsSpread } from 'ts-transformer/util/arrayLikeExpressionContainsSpread';
 import { skipUpwards } from 'ts-transformer/util/traversal';
 import { isLuaTupleType } from 'ts-transformer/util/types';
-import ts from 'typescript';
+import * as ts from 'typescript/sync';
 
 function shouldWrapLuaTuple(state: TransformState, node: ts.CallExpression, exp: luau.Expression) {
 	if (!luau.isCall(exp)) {

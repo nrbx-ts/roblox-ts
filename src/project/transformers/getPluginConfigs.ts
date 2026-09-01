@@ -1,12 +1,12 @@
 import path from 'node:path';
 import { ProjectError } from 'shared/errors/ProjectError';
 import type { TransformerPluginConfig } from 'shared/types';
-import ts from 'typescript';
+import * as ts from 'typescript/sync';
 
 export function getPluginConfigs(tsConfigPath: string) {
 	const configFile = ts.readConfigFile(tsConfigPath, ts.sys.readFile);
 	if (configFile.error) {
-		throw new ProjectError(configFile.error.messageText.toString());
+		throw new ProjectError(configFile.error.messageText?.toString() ?? '');
 	}
 
 	const pluginConfigs: TransformerPluginConfig[] = [];

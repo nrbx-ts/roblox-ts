@@ -9,7 +9,7 @@ import { createTruthinessChecks } from 'ts-transformer/util/createTruthinessChec
 import { assignToMapPointer, createMapPointer, disableMapInline, type MapPointer } from 'ts-transformer/util/pointer';
 import { getFirstDefinedSymbol, isDefinitelyType, isObjectType } from 'ts-transformer/util/types';
 import { validateMethodAssignment } from 'ts-transformer/util/validateMethodAssignment';
-import ts from 'typescript';
+import * as ts from 'typescript/sync';
 
 function transformPropertyAssignment(
 	state: TransformState,

@@ -2,7 +2,7 @@ import luau from '@roblox-ts/luau-ast';
 import type { TransformState } from 'ts-transformer';
 import { transformStatement } from 'ts-transformer/nodes/statements/transformStatement';
 import { createHoistDeclaration } from 'ts-transformer/util/createHoistDeclaration';
-import ts from 'typescript';
+import * as ts from 'typescript/sync';
 
 function getLastToken(parent: ts.Node | undefined, statements: ReadonlyArray<ts.Statement>) {
 	if (statements.length > 0) {

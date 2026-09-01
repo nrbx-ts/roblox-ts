@@ -9,7 +9,7 @@ import { getExtendsNode } from 'ts-transformer/util/getExtendsNode';
 import { isSymbolMutable } from 'ts-transformer/util/isSymbolMutable';
 import { getAncestor, isAncestorOf, skipDownwards, skipUpwards } from 'ts-transformer/util/traversal';
 import { getFirstConstructSymbol } from 'ts-transformer/util/types';
-import ts from 'typescript';
+import * as ts from 'typescript/sync';
 
 export function transformIdentifierDefined(state: TransformState, node: ts.Identifier) {
 	const symbol = ts.isShorthandPropertyAssignment(node.parent)

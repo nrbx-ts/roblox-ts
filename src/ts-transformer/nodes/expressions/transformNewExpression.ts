@@ -5,7 +5,7 @@ import { convertToIndexableExpression } from 'ts-transformer/util/convertToIndex
 import { ensureTransformOrder } from 'ts-transformer/util/ensureTransformOrder';
 import { getFirstConstructSymbol } from 'ts-transformer/util/types';
 import { validateNotAnyType } from 'ts-transformer/util/validateNotAny';
-import type ts from 'typescript';
+import type * as ts from 'typescript/sync';
 
 export function transformNewExpression(state: TransformState, node: ts.NewExpression) {
 	validateNotAnyType(state, node.expression);

@@ -4,7 +4,7 @@ import { transformExpression } from 'ts-transformer/nodes/expressions/transformE
 import { transformStatementList } from 'ts-transformer/nodes/transformStatementList';
 import { createTruthinessChecks } from 'ts-transformer/util/createTruthinessChecks';
 import { getStatements } from 'ts-transformer/util/getStatements';
-import ts from 'typescript';
+import * as ts from 'typescript/sync';
 
 export function transformIfStatementInner(state: TransformState, node: ts.IfStatement): luau.IfStatement {
 	const condition = createTruthinessChecks(state, transformExpression(state, node.expression), node.expression);

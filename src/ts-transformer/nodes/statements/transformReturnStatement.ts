@@ -5,7 +5,7 @@ import { ensureTransformOrder } from 'ts-transformer/util/ensureTransformOrder';
 import { isReturnBlockedByTryStatement } from 'ts-transformer/util/isBlockedByTryStatement';
 import { skipDownwards } from 'ts-transformer/util/traversal';
 import { getFirstDefinedSymbol, isLuaTupleType } from 'ts-transformer/util/types';
-import ts from 'typescript';
+import * as ts from 'typescript/sync';
 
 function isTupleReturningCall(state: TransformState, tsExpression: ts.Expression, luaExpression: luau.Expression) {
 	// intentionally NOT using state.getType() here, because that uses skipUpwards

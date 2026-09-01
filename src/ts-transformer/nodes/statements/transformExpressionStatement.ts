@@ -8,7 +8,7 @@ import { createCompoundAssignmentStatement, getSimpleAssignmentOperator } from '
 import { getAssignableValue } from 'ts-transformer/util/getAssignableValue';
 import { skipDownwards } from 'ts-transformer/util/traversal';
 import { wrapExpressionStatement } from 'ts-transformer/util/wrapExpressionStatement';
-import ts from 'typescript';
+import * as ts from 'typescript/sync';
 
 function transformUnaryExpressionStatement(
 	state: TransformState,

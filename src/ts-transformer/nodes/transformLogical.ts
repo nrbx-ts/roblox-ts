@@ -6,7 +6,7 @@ import { createTruthinessChecks, willCreateTruthinessChecks } from 'ts-transform
 import { binaryExpressionChain } from 'ts-transformer/util/expressionChain';
 import { getKindName } from 'ts-transformer/util/getKindName';
 import { isBooleanLiteralType, isPossiblyType } from 'ts-transformer/util/types';
-import ts from 'typescript';
+import * as ts from 'typescript/sync';
 
 interface LogicalChainItem {
 	node: ts.Expression;

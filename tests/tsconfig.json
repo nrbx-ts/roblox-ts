@@ -2,11 +2,10 @@
 	"compilerOptions": {
 		// required
 		"allowSyntheticDefaultImports": true,
-		"downlevelIteration": true,
 		"jsx": "react",
 		"jsxFactory": "Roact.jsx",
-		"module": "commonjs",
-		"moduleResolution": "Node",
+		"module": "nodenext",
+		"moduleResolution": "NodeNext",
 		"noLib": true,
 		"resolveJsonModule": true,
 		"forceConsistentCasingInFileNames": true,

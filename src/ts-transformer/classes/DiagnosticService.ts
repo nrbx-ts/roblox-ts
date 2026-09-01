@@ -1,5 +1,5 @@
 import { hasErrors as hasAnyErrors } from 'shared/util/hasErrors';
-import type ts from 'typescript';
+import type * as ts from 'typescript/sync';
 
 export namespace DiagnosticService {
 	let diagnostics = [] as ts.Diagnostic[];

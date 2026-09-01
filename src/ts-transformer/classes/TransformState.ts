@@ -15,7 +15,7 @@ import { createGetService } from 'ts-transformer/util/createGetService';
 import { propertyAccessExpressionChain } from 'ts-transformer/util/expressionChain';
 import { getModuleAncestor, skipUpwards } from 'ts-transformer/util/traversal';
 import { valueToIdStr } from 'ts-transformer/util/valueToIdStr';
-import ts from 'typescript';
+import * as ts from 'typescript/sync';
 
 /**
  * Represents the state of the transformation between TS -> Luau AST.

@@ -4,7 +4,7 @@ import { transformExpression } from 'ts-transformer/nodes/expressions/transformE
 import { createTruthinessChecks } from 'ts-transformer/util/createTruthinessChecks';
 import { isUsedAsStatement } from 'ts-transformer/util/isUsedAsStatement';
 import { wrapExpressionStatement } from 'ts-transformer/util/wrapExpressionStatement';
-import type ts from 'typescript';
+import type * as ts from 'typescript/sync';
 
 export function transformConditionalExpression(state: TransformState, node: ts.ConditionalExpression) {
 	const condition = transformExpression(state, node.condition);

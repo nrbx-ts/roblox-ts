@@ -7,7 +7,7 @@ import { transformJsxTagName } from 'ts-transformer/nodes/jsx/transformJsxTagNam
 import { transformEntityName } from 'ts-transformer/nodes/transformEntityName';
 import { convertToIndexableExpression } from 'ts-transformer/util/convertToIndexableExpression';
 import { createMapPointer, type MapPointer } from 'ts-transformer/util/pointer';
-import type ts from 'typescript';
+import type * as ts from 'typescript/sync';
 
 export function transformJsx(
 	state: TransformState,

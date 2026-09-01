@@ -8,7 +8,7 @@ import { assertNever } from 'ts-transformer/util/assertNever';
 import { createTruthinessChecks } from 'ts-transformer/util/createTruthinessChecks';
 import { isDefinitelyType, isNumberType } from 'ts-transformer/util/types';
 import { validateNotAnyType } from 'ts-transformer/util/validateNotAny';
-import ts from 'typescript';
+import * as ts from 'typescript/sync';
 
 export function transformPostfixUnaryExpression(state: TransformState, node: ts.PostfixUnaryExpression) {
 	validateNotAnyType(state, node.operand);

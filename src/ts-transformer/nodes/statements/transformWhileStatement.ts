@@ -4,7 +4,7 @@ import { transformExpression } from 'ts-transformer/nodes/expressions/transformE
 import { transformStatementList } from 'ts-transformer/nodes/transformStatementList';
 import { createTruthinessChecks } from 'ts-transformer/util/createTruthinessChecks';
 import { getStatements } from 'ts-transformer/util/getStatements';
-import type ts from 'typescript';
+import type * as ts from 'typescript/sync';
 
 export function transformWhileStatement(state: TransformState, node: ts.WhileStatement) {
 	const whileStatements = luau.list.make<luau.Statement>();

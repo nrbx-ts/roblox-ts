@@ -4,7 +4,7 @@ import { transformExpression } from 'ts-transformer/nodes/expressions/transformE
 import { transformStatementList } from 'ts-transformer/nodes/transformStatementList';
 import { createTruthinessChecks } from 'ts-transformer/util/createTruthinessChecks';
 import { getStatements } from 'ts-transformer/util/getStatements';
-import ts from 'typescript';
+import * as ts from 'typescript/sync';
 
 export function transformDoStatement(state: TransformState, { expression, statement }: ts.DoStatement) {
 	const statements = transformStatementList(state, statement, getStatements(statement));

@@ -16,7 +16,7 @@ import { getFirstDefinedSymbol, isPossiblyType, isRobloxType, isUndefinedType } 
 import { validateNotAnyType } from 'ts-transformer/util/validateNotAny';
 import { valueToIdStr } from 'ts-transformer/util/valueToIdStr';
 import { wrapReturnIfLuaTuple } from 'ts-transformer/util/wrapReturnIfLuaTuple';
-import ts from 'typescript';
+import * as ts from 'typescript/sync';
 
 function runCallMacro(
 	macro: CallMacro | PropertyCallMacro,

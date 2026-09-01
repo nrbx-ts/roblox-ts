@@ -5,7 +5,7 @@
  * Small changes were made for compatibility + silencing ESLint warnings.
  */
 
-import ts from 'typescript';
+import * as ts from 'typescript/sync';
 
 /**
  * JSX trims whitespace at the end and beginning of lines, except that the

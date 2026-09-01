@@ -1,4 +1,4 @@
-import ts from 'typescript';
+import * as ts from 'typescript/sync';
 
 function getDeclaredVariablesFromBindingName(node: ts.BindingName, list: Array<ts.Identifier>) {
 	if (ts.isIdentifier(node)) {

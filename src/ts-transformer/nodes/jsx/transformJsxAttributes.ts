@@ -6,7 +6,7 @@ import { transformExpression } from 'ts-transformer/nodes/expressions/transformE
 import { createTruthinessChecks } from 'ts-transformer/util/createTruthinessChecks';
 import { assignToMapPointer, disableMapInline, type MapPointer } from 'ts-transformer/util/pointer';
 import { getFirstDefinedSymbol, isDefinitelyType, isObjectType } from 'ts-transformer/util/types';
-import ts from 'typescript';
+import * as ts from 'typescript/sync';
 
 function createJsxAttributeLoop(
 	state: TransformState,

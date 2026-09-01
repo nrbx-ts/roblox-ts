@@ -2,7 +2,7 @@ import luau from '@roblox-ts/luau-ast';
 import type { TransformState } from 'ts-transformer';
 import { transformInterpolatedStringPart } from 'ts-transformer/nodes/transformInterpolatedStringPart';
 import { ensureTransformOrder } from 'ts-transformer/util/ensureTransformOrder';
-import type ts from 'typescript';
+import type * as ts from 'typescript/sync';
 
 export function transformTemplateExpression(state: TransformState, node: ts.TemplateExpression) {
 	const parts = luau.list.make<luau.InterpolatedStringPart | luau.Expression>();

@@ -17,7 +17,7 @@ import {
 	isStringType,
 } from 'ts-transformer/util/types';
 import { valueToIdStr } from 'ts-transformer/util/valueToIdStr';
-import type ts from 'typescript';
+import type * as ts from 'typescript/sync';
 
 type AddIterableToArrayBuilder = (
 	state: TransformState,

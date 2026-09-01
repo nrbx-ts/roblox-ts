@@ -17,7 +17,7 @@ import { getStatements } from 'ts-transformer/util/getStatements';
 import { offset } from 'ts-transformer/util/offset';
 import { getAncestor, isAncestorOf, skipDownwards, skipUpwards } from 'ts-transformer/util/traversal';
 import { getFirstDefinedSymbol, isDefinitelyType } from 'ts-transformer/util/types';
-import ts from 'typescript';
+import * as ts from 'typescript/sync';
 
 function addFinalizersToIfStatement(node: luau.IfStatement, finalizers: luau.List<luau.Statement>) {
 	if (luau.list.isNonEmpty(node.statements)) {
@@ -202,6 +202,7 @@ function transformForStatementFallback(state: TransformState, node: ts.ForStatem
 				}
 			}
 		} else {
+			assert(!ts.isMissingDeclaration(initializer));
 			const [statements, prereqs] = state.capture(() => transformExpressionStatementInner(state, initializer));
 			luau.list.pushList(result, prereqs);
 			luau.list.pushList(result, statements);

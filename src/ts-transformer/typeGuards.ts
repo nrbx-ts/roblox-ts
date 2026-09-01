@@ -1,4 +1,4 @@
-import ts from 'typescript';
+import * as ts from 'typescript/sync';
 
 export function isBlockLike(node: ts.Node): node is ts.BlockLike {
 	return (

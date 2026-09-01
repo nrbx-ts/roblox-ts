@@ -1,5 +1,5 @@
 import { EOL } from 'node:os';
-import ts from 'typescript';
+import * as ts from 'typescript/sync';
 
 function createFormatDiagnosticsHost(): ts.FormatDiagnosticsHost {
 	return {

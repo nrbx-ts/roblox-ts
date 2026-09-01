@@ -1,7 +1,7 @@
 import { createProgramFactory } from 'project/functions/createProgramFactory';
 import { getParsedCommandLine } from 'project/functions/getParsedCommandLine';
 import type { ProjectData } from 'shared/types';
-import type ts from 'typescript';
+import type * as ts from 'typescript/sync';
 
 export function createProjectProgram(data: ProjectData, host?: ts.CompilerHost) {
 	const { fileNames, options } = getParsedCommandLine(data);

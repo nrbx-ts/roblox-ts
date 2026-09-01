@@ -1,6 +1,6 @@
 import { getCanonicalFileName } from 'shared/util/getCanonicalFileName';
 import { getOrSetDefault } from 'shared/util/getOrSetDefault';
-import ts from 'typescript';
+import * as ts from 'typescript/sync';
 
 /**
  * generates a `Set<string>` of paths for changed files + dependencies

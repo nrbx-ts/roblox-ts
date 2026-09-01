@@ -1,5 +1,5 @@
 import { skipUpwards } from 'ts-transformer/util/traversal';
-import ts from 'typescript';
+import * as ts from 'typescript/sync';
 
 export function isUsedAsStatement(expression: ts.Expression) {
 	const child = skipUpwards(expression);

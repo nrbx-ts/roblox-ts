@@ -9,7 +9,7 @@ import { transformPropertyName } from 'ts-transformer/nodes/transformPropertyNam
 import { expressionMightMutate } from 'ts-transformer/util/expressionMightMutate';
 import { hasMultipleDefinitions } from 'ts-transformer/util/hasMultipleDefinitions';
 import { validateIdentifier } from 'ts-transformer/util/validateIdentifier';
-import ts from 'typescript';
+import * as ts from 'typescript/sync';
 
 function needsInverseEntry(state: TransformState, member: ts.EnumMember) {
 	return typeof state.typeChecker.getConstantValue(member) !== 'string';

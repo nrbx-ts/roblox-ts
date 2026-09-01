@@ -1,4 +1,4 @@
-import ts from 'typescript';
+import * as ts from 'typescript/sync';
 
 export function getOriginalSymbolOfNode(typeChecker: ts.TypeChecker, node: ts.Node) {
 	const symbol = typeChecker.getSymbolAtLocation(node);

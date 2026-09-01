@@ -10,7 +10,7 @@ import { offset } from 'ts-transformer/util/offset';
 import { skipUpwards } from 'ts-transformer/util/traversal';
 import { isLuaTupleType } from 'ts-transformer/util/types';
 import { validateNotAnyType } from 'ts-transformer/util/validateNotAny';
-import ts from 'typescript';
+import * as ts from 'typescript/sync';
 
 export function transformElementAccessExpressionInner(
 	state: TransformState,

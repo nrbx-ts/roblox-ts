@@ -3,7 +3,7 @@ import type { TransformState } from 'ts-transformer';
 import { transformExpression } from 'ts-transformer/nodes/expressions/transformExpression';
 import { convertToIndexableExpression } from 'ts-transformer/util/convertToIndexableExpression';
 import { ensureTransformOrder } from 'ts-transformer/util/ensureTransformOrder';
-import ts from 'typescript';
+import * as ts from 'typescript/sync';
 
 export function transformTaggedTemplateExpression(state: TransformState, node: ts.TaggedTemplateExpression) {
 	const tagExp = transformExpression(state, node.tag);

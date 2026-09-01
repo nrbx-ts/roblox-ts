@@ -1,4 +1,4 @@
-import ts from 'typescript';
+import * as ts from 'typescript/sync';
 
 export function getStatements(statement: ts.Statement): ReadonlyArray<ts.Statement> {
 	return ts.isBlock(statement) ? statement.statements : [statement];

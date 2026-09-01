@@ -18,7 +18,7 @@ import { isUsedAsStatement } from 'ts-transformer/util/isUsedAsStatement';
 import { skipDownwards } from 'ts-transformer/util/traversal';
 import { getFirstDefinedSymbol } from 'ts-transformer/util/types';
 import { wrapReturnIfLuaTuple } from 'ts-transformer/util/wrapReturnIfLuaTuple';
-import ts from 'typescript';
+import * as ts from 'typescript/sync';
 
 enum OptionalChainItemKind {
 	PropertyAccess,

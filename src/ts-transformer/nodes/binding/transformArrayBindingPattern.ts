@@ -6,7 +6,7 @@ import { transformInitializer } from 'ts-transformer/nodes/transformInitializer'
 import { getAccessorForBindingType } from 'ts-transformer/util/binding/getAccessorForBindingType';
 import { getSpreadDestructorForType } from 'ts-transformer/util/spreadDestructuring';
 import { validateNotAnyType } from 'ts-transformer/util/validateNotAny';
-import ts from 'typescript';
+import * as ts from 'typescript/sync';
 
 export function transformArrayBindingPattern(
 	state: TransformState,

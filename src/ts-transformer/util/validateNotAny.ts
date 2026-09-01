@@ -4,7 +4,7 @@ import { DiagnosticService } from 'ts-transformer/classes/DiagnosticService';
 import { getOriginalSymbolOfNode } from 'ts-transformer/util/getOriginalSymbolOfNode';
 import { skipDownwards } from 'ts-transformer/util/traversal';
 import { isAnyType, isArrayType, isDefinitelyType } from 'ts-transformer/util/types';
-import ts from 'typescript';
+import * as ts from 'typescript/sync';
 
 export function validateNotAnyType(state: TransformState, node: ts.Node) {
 	if (ts.isSpreadElement(node)) {

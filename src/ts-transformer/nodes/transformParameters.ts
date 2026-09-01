@@ -7,7 +7,7 @@ import { transformInitializer } from 'ts-transformer/nodes/transformInitializer'
 import { arrayLikeExpressionContainsSpread } from 'ts-transformer/util/arrayLikeExpressionContainsSpread';
 import { isMethod } from 'ts-transformer/util/isMethod';
 import { validateIdentifier } from 'ts-transformer/util/validateIdentifier';
-import ts from 'typescript';
+import * as ts from 'typescript/sync';
 
 /**
  * Optimizes parameters in the form `...[a, b, c]: [A, B, C]` to be just `(a, b, c)`

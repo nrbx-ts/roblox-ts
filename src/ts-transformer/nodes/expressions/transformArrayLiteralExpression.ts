@@ -5,7 +5,7 @@ import { transformExpression } from 'ts-transformer/nodes/expressions/transformE
 import { ensureTransformOrder } from 'ts-transformer/util/ensureTransformOrder';
 import { getAddIterableToArrayBuilder } from 'ts-transformer/util/getAddIterableToArrayBuilder';
 import { createArrayPointer, disableArrayInline } from 'ts-transformer/util/pointer';
-import ts from 'typescript';
+import * as ts from 'typescript/sync';
 
 export function transformArrayLiteralExpression(state: TransformState, node: ts.ArrayLiteralExpression) {
 	if (!node.elements.find((element) => ts.isSpreadElement(element))) {

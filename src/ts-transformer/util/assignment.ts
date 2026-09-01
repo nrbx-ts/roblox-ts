@@ -2,7 +2,7 @@ import luau from '@roblox-ts/luau-ast';
 import type { TransformState } from 'ts-transformer';
 import { createBinaryFromOperator } from 'ts-transformer/util/createBinaryFromOperator';
 import { isDefinitelyType, isStringType } from 'ts-transformer/util/types';
-import ts from 'typescript';
+import * as ts from 'typescript/sync';
 
 const COMPOUND_OPERATOR_MAP = new Map<ts.SyntaxKind, luau.AssignmentOperator>([
 	// compound assignment

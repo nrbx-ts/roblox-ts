@@ -18,7 +18,7 @@ import { getExtendsNode } from 'ts-transformer/util/getExtendsNode';
 import { getKindName } from 'ts-transformer/util/getKindName';
 import { validateIdentifier } from 'ts-transformer/util/validateIdentifier';
 import { validateMethodAssignment } from 'ts-transformer/util/validateMethodAssignment';
-import ts from 'typescript';
+import * as ts from 'typescript/sync';
 
 const MAGIC_TO_STRING_METHOD = 'toString';
 
@@ -297,8 +297,10 @@ export function transformClassLikeDeclaration(state: TransformState, node: ts.Cl
 		}
 	}
 
-	const classType = state.typeChecker.getTypeOfSymbolAtLocation(node.symbol, node);
-	const instanceType = state.typeChecker.getDeclaredTypeOfSymbol(node.symbol);
+	const symbol = state.typeChecker.getSymbolAtLocation(node);
+	assert(symbol);
+	const classType = state.typeChecker.getTypeOfSymbolAtLocation(symbol, node);
+	const instanceType = state.typeChecker.getDeclaredTypeOfSymbol(symbol);
 
 	for (const method of methods) {
 		if (ts.isIdentifier(method.name) || ts.isStringLiteral(method.name)) {

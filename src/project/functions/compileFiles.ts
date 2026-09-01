@@ -22,7 +22,7 @@ import { getRootDirs } from 'shared/util/getRootDirs';
 import { MultiTransformState, TransformState, transformSourceFile } from 'ts-transformer';
 import { DiagnosticService } from 'ts-transformer/classes/DiagnosticService';
 import { createTransformServices } from 'ts-transformer/util/createTransformServices';
-import ts from 'typescript';
+import * as ts from 'typescript/sync';
 
 function inferProjectType(data: ProjectData, rojoResolver: RojoResolver): ProjectType {
 	if (data.isPackage) {

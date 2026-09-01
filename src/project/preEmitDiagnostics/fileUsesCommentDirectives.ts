@@ -1,6 +1,6 @@
 import { errors } from 'shared/diagnostics';
 import type { ProjectData } from 'shared/types';
-import type ts from 'typescript';
+import type * as ts from 'typescript/sync';
 
 export function fileUsesCommentDirectives(data: ProjectData, sourceFile: ts.SourceFile) {
 	if (data.projectOptions.allowCommentDirectives) {
@@ -18,7 +18,7 @@ export function fileUsesCommentDirectives(data: ProjectData, sourceFile: ts.Sour
 		);
 	}
 
-	const tsNoCheckPragma = sourceFile.pragmas.get('ts-nocheck');
+	const tsNoCheckPragma = sourceFile.pragmas?.get('ts-nocheck');
 	if (tsNoCheckPragma) {
 		for (const pragma of Array.isArray(tsNoCheckPragma) ? tsNoCheckPragma : [tsNoCheckPragma]) {
 			diagnostics.push(

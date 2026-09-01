@@ -8,7 +8,7 @@ import { transformParameters } from 'ts-transformer/nodes/transformParameters';
 import { transformStatementList } from 'ts-transformer/nodes/transformStatementList';
 import { validateIdentifier } from 'ts-transformer/util/validateIdentifier';
 import { wrapStatementsAsGenerator } from 'ts-transformer/util/wrapStatementsAsGenerator';
-import ts from 'typescript';
+import * as ts from 'typescript/sync';
 
 export function transformFunctionDeclaration(state: TransformState, node: ts.FunctionDeclaration) {
 	if (!node.body) {

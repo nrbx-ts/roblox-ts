@@ -1,4 +1,4 @@
-import type ts from 'typescript';
+import type * as ts from 'typescript/sync';
 
 /**
  * MultiTransformState is state that lives only for a single compilation step.

@@ -10,7 +10,7 @@ import { getAccessorForBindingType } from 'ts-transformer/util/binding/getAccess
 import { getKindName } from 'ts-transformer/util/getKindName';
 import { getSpreadDestructorForType } from 'ts-transformer/util/spreadDestructuring';
 import { skipDownwards } from 'ts-transformer/util/traversal';
-import ts from 'typescript';
+import * as ts from 'typescript/sync';
 
 export function transformArrayAssignmentPattern(
 	state: TransformState,

@@ -11,7 +11,7 @@ import { isSymbolMutable } from 'ts-transformer/util/isSymbolMutable';
 import { isSymbolOfValue } from 'ts-transformer/util/isSymbolOfValue';
 import { getAncestor } from 'ts-transformer/util/traversal';
 import { validateIdentifier } from 'ts-transformer/util/validateIdentifier';
-import ts from 'typescript';
+import * as ts from 'typescript/sync';
 
 function isDeclarationOfNamespace(declaration: ts.Declaration) {
 	const modifiers = ts.canHaveModifiers(declaration) ? ts.getModifiers(declaration) : undefined;
@@ -105,7 +105,8 @@ function transformNamespace(state: TransformState, name: ts.Identifier, body: ts
 			})
 		);
 	} else {
-		luau.list.pushList(doStatements, transformNamespace(state, body.name, body.body));
+		assert(ts.isIdentifier(body.name));
+		luau.list.pushList(doStatements, transformNamespace(state, body.name, body.body as ts.NamespaceBody));
 		luau.list.push(
 			doStatements,
 			luau.create(luau.SyntaxKind.Assignment, {

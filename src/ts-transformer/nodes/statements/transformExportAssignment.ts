@@ -5,7 +5,7 @@ import { DiagnosticService } from 'ts-transformer/classes/DiagnosticService';
 import { transformExpression } from 'ts-transformer/nodes/expressions/transformExpression';
 import { isSymbolMutable } from 'ts-transformer/util/isSymbolMutable';
 import { isSymbolOfValue } from 'ts-transformer/util/isSymbolOfValue';
-import ts from 'typescript';
+import * as ts from 'typescript/sync';
 
 function transformExportEquals(state: TransformState, node: ts.ExportAssignment) {
 	state.hasExportEquals = true;

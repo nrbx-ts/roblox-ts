@@ -16,7 +16,7 @@ import {
 	isSharedTableType,
 	isStringType,
 } from 'ts-transformer/util/types';
-import ts from 'typescript';
+import * as ts from 'typescript/sync';
 
 type BindingAccessor = (
 	state: TransformState,

@@ -5,7 +5,7 @@ import { isMethod } from 'ts-transformer/util/isMethod';
 import { isValidMethodIndexWithoutCall } from 'ts-transformer/util/isValidMethodIndexWithoutCall';
 import { skipUpwards } from 'ts-transformer/util/traversal';
 import { getFirstDefinedSymbol } from 'ts-transformer/util/types';
-import ts from 'typescript';
+import * as ts from 'typescript/sync';
 
 export function addIndexDiagnostics(
 	state: TransformState,

@@ -1,6 +1,6 @@
 import luau from '@roblox-ts/luau-ast';
 import type { TransformState } from 'ts-transformer/classes/TransformState';
-import ts from 'typescript';
+import * as ts from 'typescript/sync';
 
 /**
  * Checks to see if the binding contains initializers and returns a new temporary identifier,

@@ -1,7 +1,7 @@
 import type { TransformState } from 'ts-transformer';
 import { CALL_MACROS } from 'ts-transformer/macros/callMacros';
 import { getFirstDefinedSymbol } from 'ts-transformer/util/types';
-import ts from 'typescript';
+import * as ts from 'typescript/sync';
 
 export function isValidMethodIndexWithoutCall(state: TransformState, node: ts.Node): boolean {
 	const { parent } = node;

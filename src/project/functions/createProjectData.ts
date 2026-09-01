@@ -5,7 +5,7 @@ import { LogService } from 'shared/classes/LogService';
 import { NODE_MODULES } from 'shared/constants';
 import { ProjectError } from 'shared/errors/ProjectError';
 import type { ProjectData, ProjectOptions } from 'shared/types';
-import ts from 'typescript';
+import * as ts from 'typescript/sync';
 
 const PACKAGE_REGEX = /^@[a-z0-9-]*\//;
 

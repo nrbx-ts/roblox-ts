@@ -10,7 +10,7 @@ import { objectAccessor } from 'ts-transformer/util/binding/objectAccessor';
 import { spreadDestructureObject } from 'ts-transformer/util/spreadDestructuring';
 import { isPossiblyType, isRobloxType } from 'ts-transformer/util/types';
 import { validateNotAnyType } from 'ts-transformer/util/validateNotAny';
-import ts from 'typescript';
+import * as ts from 'typescript/sync';
 
 export function transformObjectBindingPattern(
 	state: TransformState,

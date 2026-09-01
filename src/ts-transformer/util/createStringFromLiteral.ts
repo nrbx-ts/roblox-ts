@@ -1,4 +1,4 @@
-import ts from 'typescript';
+import * as ts from 'typescript/sync';
 
 const TEMPLATE_EDGE = '`'.length;
 const TEMPLATE_EXP_START = '${'.length;

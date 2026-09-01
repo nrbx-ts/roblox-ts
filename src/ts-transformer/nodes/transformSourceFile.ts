@@ -9,12 +9,14 @@ import { getOriginalSymbolOfNode } from 'ts-transformer/util/getOriginalSymbolOf
 import { isSymbolMutable } from 'ts-transformer/util/isSymbolMutable';
 import { isSymbolOfValue } from 'ts-transformer/util/isSymbolOfValue';
 import { getAncestor } from 'ts-transformer/util/traversal';
-import ts from 'typescript';
+import * as ts from 'typescript/sync';
 
 function getExportPair(state: TransformState, exportSymbol: ts.Symbol): [name: string, id: luau.AnyIdentifier] {
 	const declaration = exportSymbol.getDeclarations()?.[0];
 	if (declaration && ts.isExportSpecifier(declaration)) {
-		return [declaration.name.text, transformIdentifierDefined(state, declaration.propertyName ?? declaration.name)];
+		const name = declaration.propertyName ?? declaration.name;
+		assert(ts.isIdentifier(name));
+		return [declaration.name.text, transformIdentifierDefined(state, name)];
 	} else {
 		let name = exportSymbol.name;
 		if (

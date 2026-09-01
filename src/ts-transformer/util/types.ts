@@ -4,7 +4,7 @@ import { isPathDescendantOf } from 'shared/util/isPathDescendantOf';
 import { SYMBOL_NAMES, type TransformState } from 'ts-transformer';
 import { NOMINAL_LUA_TUPLE_NAME } from 'ts-transformer/classes/MacroManager';
 import { isTemplateLiteralType } from 'ts-transformer/typeGuards';
-import ts from 'typescript';
+import * as ts from 'typescript/sync';
 
 type TypeCheck = (type: ts.Type) => boolean;
 
@@ -237,7 +237,7 @@ export function getFirstConstructSymbol(state: TransformState, expression: ts.Ex
 				if (ts.isInterfaceDeclaration(declaration)) {
 					for (const member of declaration.members) {
 						if (ts.isConstructSignatureDeclaration(member)) {
-							return member.symbol;
+							return state.typeChecker.getSymbolAtLocation(member);
 						}
 					}
 				}

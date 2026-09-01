@@ -39,7 +39,7 @@ import {
 import { transformVoidExpression } from 'ts-transformer/nodes/expressions/transformVoidExpression';
 import { transformYieldExpression } from 'ts-transformer/nodes/expressions/transformYieldExpression';
 import { getKindName } from 'ts-transformer/util/getKindName';
-import ts from 'typescript';
+import * as ts from 'typescript/sync';
 
 const NO_EMIT = () => luau.none();
 

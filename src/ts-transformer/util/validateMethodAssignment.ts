@@ -3,7 +3,7 @@ import type { TransformState } from 'ts-transformer';
 import { DiagnosticService } from 'ts-transformer/classes/DiagnosticService';
 import { isMethodFromType } from 'ts-transformer/util/isMethod';
 import { walkTypes } from 'ts-transformer/util/types';
-import ts from 'typescript';
+import * as ts from 'typescript/sync';
 
 function hasCallSignatures(type: ts.Type) {
 	let hasCallSignatures = false;
@@ -34,8 +34,11 @@ function validateObjectLiteralElement(state: TransformState, node: ts.ObjectLite
 	}
 }
 
-function validateHeritageClause(state: TransformState, node: ts.ClassElement, typeNode: ts.TypeNode) {
-	const name = ts.getPropertyNameForPropertyNameNode(node.name!);
+function validateHeritageClause(state: TransformState, node: ts.ClassElement, typeNode: ts.ExpressionWithTypeArguments) {
+	const name = ts.getPropertyNameForPropertyNameNode(
+		(node as ts.MethodDeclaration | ts.PropertyDeclaration | ts.GetAccessorDeclaration | ts.SetAccessorDeclaration)
+			.name!
+	);
 	if (!name) return;
 
 	const type = state.getType(node);
@@ -61,7 +64,11 @@ function validateSpread(state: TransformState, node: ts.SpreadAssignment) {
 }
 
 export function validateMethodAssignment(state: TransformState, node: ts.ObjectLiteralElementLike | ts.ClassElement) {
-	if (ts.isClassElement(node) && ts.isClassLike(node.parent) && node.name) {
+	if (
+		ts.isClassElement(node) &&
+		ts.isClassLike(node.parent) &&
+		(node as ts.MethodDeclaration | ts.PropertyDeclaration | ts.GetAccessorDeclaration | ts.SetAccessorDeclaration).name
+	) {
 		for (const typeNode of ts.getAllSuperTypeNodes(node.parent)) {
 			validateHeritageClause(state, node, typeNode);
 		}

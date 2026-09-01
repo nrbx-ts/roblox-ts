@@ -1,6 +1,6 @@
 import type luau from '@roblox-ts/luau-ast';
 import type { TransformState } from 'ts-transformer';
-import type ts from 'typescript';
+import type * as ts from 'typescript/sync';
 
 export type MacroList<T> = { [index: string]: T };
 

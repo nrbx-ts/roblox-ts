@@ -1,6 +1,6 @@
 import type { TransformState } from 'ts-transformer/classes/TransformState';
 import { checkVariableHoist } from 'ts-transformer/util/checkVariableHoist';
-import ts from 'typescript';
+import * as ts from 'typescript/sync';
 
 export function arrayBindingPatternContainsHoists(
 	state: TransformState,

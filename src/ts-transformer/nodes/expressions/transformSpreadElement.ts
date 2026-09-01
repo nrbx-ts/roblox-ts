@@ -7,14 +7,15 @@ import { transformExpression } from 'ts-transformer/nodes/expressions/transformE
 import { getAddIterableToArrayBuilder } from 'ts-transformer/util/getAddIterableToArrayBuilder';
 import { isArrayType, isDefinitelyType } from 'ts-transformer/util/types';
 import { validateNotAnyType } from 'ts-transformer/util/validateNotAny';
-import ts from 'typescript';
+import * as ts from 'typescript/sync';
 
 export function transformSpreadElement(state: TransformState, node: ts.SpreadElement) {
 	validateNotAnyType(state, node.expression);
 
 	// array literal is caught and handled separately in transformArrayLiteralExpression.ts
-	assert(!ts.isArrayLiteralExpression(node.parent) && node.parent.arguments);
-	if (node.parent.arguments[node.parent.arguments.length - 1] !== node) {
+	const parent = node.parent as ts.CallExpression | ts.NewExpression;
+	assert(!ts.isArrayLiteralExpression(node.parent) && parent.arguments);
+	if (parent.arguments[parent.arguments.length - 1] !== node) {
 		DiagnosticService.addDiagnostic(errors.noPrecedingSpreadElement(node));
 	}
 

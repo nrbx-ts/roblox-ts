@@ -8,7 +8,7 @@ import {
 	isBreakBlockedByTryStatement,
 	isReturnBlockedByTryStatement,
 } from 'ts-transformer/util/isBlockedByTryStatement';
-import type ts from 'typescript';
+import type * as ts from 'typescript/sync';
 
 function transformCatchClause(state: TransformState, node: ts.CatchClause) {
 	const parameters = luau.list.make<luau.AnyIdentifier>();

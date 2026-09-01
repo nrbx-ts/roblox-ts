@@ -3,7 +3,7 @@ import type { TransformState } from 'ts-transformer';
 import { transformExpression } from 'ts-transformer/nodes/expressions/transformExpression';
 import { transformStatementList } from 'ts-transformer/nodes/transformStatementList';
 import { createHoistDeclaration } from 'ts-transformer/util/createHoistDeclaration';
-import ts from 'typescript';
+import * as ts from 'typescript/sync';
 
 function transformCaseClauseExpression(
 	state: TransformState,

@@ -1,7 +1,7 @@
 import luau from '@roblox-ts/luau-ast';
 import type { TransformState } from 'ts-transformer';
 import { transformStatementList } from 'ts-transformer/nodes/transformStatementList';
-import type ts from 'typescript';
+import type * as ts from 'typescript/sync';
 
 export function transformBlock(state: TransformState, node: ts.Block) {
 	return luau.list.make(

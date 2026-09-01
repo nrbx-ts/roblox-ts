@@ -30,7 +30,7 @@ import {
 } from 'ts-transformer/util/types';
 import { validateIdentifier } from 'ts-transformer/util/validateIdentifier';
 import { valueToIdStr } from 'ts-transformer/util/valueToIdStr';
-import ts from 'typescript';
+import * as ts from 'typescript/sync';
 
 type LoopBuilder = (
 	state: TransformState,
@@ -114,6 +114,7 @@ function transformForInitializer(
 		);
 		return parentId;
 	} else {
+		assert(!ts.isMissingDeclaration(initializer));
 		const valueId = luau.tempId('v');
 		const expression = transformWritableExpression(state, initializer, false);
 		luau.list.push(
@@ -247,6 +248,7 @@ const buildMapLoop: LoopBuilder = makeForLoopBuilder((state, initializer, exp, i
 		);
 		luau.list.pushList(initializers, bindingList);
 	} else {
+		assert(!ts.isMissingDeclaration(initializer));
 		transformForInitializerExpressionDirect(state, initializer, initializers, luau.array([keyId, valueId]));
 	}
 
@@ -316,9 +318,12 @@ const buildIterableFunctionLuaTupleLoop: (type: ts.Type) => LoopBuilder =
 				let name = 'element';
 				if (tupleType.labeledElementDeclarations) {
 					const label = tupleType.labeledElementDeclarations[i];
-					if (label && ts.isIdentifier(label.name) && luau.isValidIdentifier(label.name.text)) {
-						name = label.name.text;
-					}
+						if (label) {
+							const nameNode = ts.isIdentifier(label) ? label : label.name;
+							if (ts.isIdentifier(nameNode) && luau.isValidIdentifier(nameNode.text)) {
+								name = nameNode.text;
+							}
+						}
 				}
 				iteratorReturnIds.push(luau.tempId(name));
 			}
@@ -402,6 +407,7 @@ const buildGeneratorLoop: LoopBuilder = makeForLoopBuilder((state, initializer, 
 		);
 		luau.list.pushList(initializers, bindingList);
 	} else {
+		assert(!ts.isMissingDeclaration(initializer));
 		transformForInitializerExpressionDirect(state, initializer, initializers, luau.property(loopId, 'value'));
 	}
 

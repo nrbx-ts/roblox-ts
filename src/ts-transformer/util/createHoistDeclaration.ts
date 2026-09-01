@@ -2,7 +2,7 @@ import luau from '@roblox-ts/luau-ast';
 import type { TransformState } from 'ts-transformer';
 import { transformIdentifierDefined } from 'ts-transformer/nodes/expressions/transformIdentifier';
 import { validateIdentifier } from 'ts-transformer/util/validateIdentifier';
-import type ts from 'typescript';
+import type * as ts from 'typescript/sync';
 
 export function createHoistDeclaration(state: TransformState, statement: ts.Statement | ts.CaseClause) {
 	const hoists = state.hoistsByStatement.get(statement);

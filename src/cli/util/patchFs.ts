@@ -8,7 +8,6 @@ const NOOP = () => {};
 
 fs.cpSync ??= NOOP as typeof fs.cpSync;
 fs.existsSync ??= (() => false) as typeof fs.existsSync;
-// @ts-expect-error -- lstatSync is a readonly property
 fs.lstatSync ??= (() => ({})) as unknown as typeof fs.lstatSync;
 fs.mkdirSync ??= NOOP as unknown as typeof fs.mkdirSync;
 fs.readFileSync ??= (() => Buffer.from('')) as unknown as typeof fs.readFileSync;

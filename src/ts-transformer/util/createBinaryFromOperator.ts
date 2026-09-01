@@ -5,7 +5,7 @@ import { createBitwiseCall, isBitwiseOperator } from 'ts-transformer/util/bitwis
 import { getKindName } from 'ts-transformer/util/getKindName';
 import { isDefinitelyType, isStringType } from 'ts-transformer/util/types';
 import { wrapExpressionStatement } from 'ts-transformer/util/wrapExpressionStatement';
-import ts from 'typescript';
+import * as ts from 'typescript/sync';
 
 const OPERATOR_MAP = new Map<ts.SyntaxKind, luau.BinaryOperator>([
 	// comparison

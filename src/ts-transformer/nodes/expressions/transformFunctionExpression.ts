@@ -6,7 +6,7 @@ import { transformReturnStatementInner } from 'ts-transformer/nodes/statements/t
 import { transformParameters } from 'ts-transformer/nodes/transformParameters';
 import { transformStatementList } from 'ts-transformer/nodes/transformStatementList';
 import { wrapStatementsAsGenerator } from 'ts-transformer/util/wrapStatementsAsGenerator';
-import ts from 'typescript';
+import * as ts from 'typescript/sync';
 
 export function transformFunctionExpression(state: TransformState, node: ts.FunctionExpression | ts.ArrowFunction) {
 	if (node.name) {

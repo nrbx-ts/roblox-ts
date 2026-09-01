@@ -10,7 +10,7 @@ import { objectAccessor } from 'ts-transformer/util/binding/objectAccessor';
 import { getKindName } from 'ts-transformer/util/getKindName';
 import { spreadDestructureObject } from 'ts-transformer/util/spreadDestructuring';
 import { skipDownwards } from 'ts-transformer/util/traversal';
-import ts from 'typescript';
+import * as ts from 'typescript/sync';
 
 export function transformObjectAssignmentPattern(
 	state: TransformState,

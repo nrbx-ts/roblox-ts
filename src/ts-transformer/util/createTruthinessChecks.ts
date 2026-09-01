@@ -4,7 +4,7 @@ import type { TransformState } from 'ts-transformer';
 import { DiagnosticService } from 'ts-transformer/classes/DiagnosticService';
 import { binaryExpressionChain } from 'ts-transformer/util/expressionChain';
 import { isEmptyStringType, isNaNType, isNumberLiteralType, isPossiblyType } from 'ts-transformer/util/types';
-import type ts from 'typescript';
+import type * as ts from 'typescript/sync';
 
 export function willCreateTruthinessChecks(type: ts.Type) {
 	return (

@@ -6,7 +6,7 @@ import { transformExpression } from 'ts-transformer/nodes/expressions/transformE
 import { addIndexDiagnostics } from 'ts-transformer/util/addIndexDiagnostics';
 import { addOneIfArrayType } from 'ts-transformer/util/addOneIfArrayType';
 import { assertNever } from 'ts-transformer/util/assertNever';
-import ts from 'typescript';
+import * as ts from 'typescript/sync';
 
 export const objectAccessor = (
 	state: TransformState,
@@ -30,6 +30,11 @@ export const objectAccessor = (
 	} else if (ts.isPrivateIdentifier(name)) {
 		DiagnosticService.addDiagnostic(errors.noPrivateIdentifier(name));
 		return luau.none();
+	} else if (ts.isBigIntLiteral(name)) {
+		return luau.create(luau.SyntaxKind.ComputedIndexExpression, {
+			expression: parentId,
+			index: transformExpression(state, name),
+		});
 	}
 	return assertNever(name, 'objectAccessor');
 };

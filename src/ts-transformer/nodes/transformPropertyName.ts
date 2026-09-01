@@ -1,7 +1,7 @@
 import luau from '@roblox-ts/luau-ast';
 import type { TransformState } from 'ts-transformer';
 import { transformExpression } from 'ts-transformer/nodes/expressions/transformExpression';
-import ts from 'typescript';
+import * as ts from 'typescript/sync';
 
 export function transformPropertyName(state: TransformState, name: ts.PropertyName) {
 	// identifier directly is from `{ a: value }`, so key must be "a"

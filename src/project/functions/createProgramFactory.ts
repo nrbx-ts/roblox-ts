@@ -3,7 +3,7 @@ import type { ProjectData } from 'project';
 import { createReadBuildProgramHost } from 'project/util/createReadBuildProgramHost';
 import { COMPILER_VERSION } from 'shared/constants';
 import { assert } from 'shared/util/assert';
-import ts from 'typescript';
+import * as ts from 'typescript/sync';
 
 function createCompilerHost(data: ProjectData, compilerOptions: ts.CompilerOptions) {
 	const host = ts.createIncrementalCompilerHost(compilerOptions);
@@ -34,5 +34,5 @@ export function createProgramFactory(
 		compilerOptions: ts.CompilerOptions | undefined = options,
 		host = createCompilerHost(data, options),
 		oldProgram = ts.readBuilderProgram(options, createReadBuildProgramHost())
-	) => ts.createEmitAndSemanticDiagnosticsBuilderProgram(rootNames, compilerOptions, host, oldProgram);
+	) => ts.createEmitAndSemanticDiagnosticsBuilderProgram(rootNames ?? [], compilerOptions, host, oldProgram);
 }

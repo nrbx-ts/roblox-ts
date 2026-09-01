@@ -1,5 +1,5 @@
 import type { TransformerWatcher } from 'shared/types';
-import ts from 'typescript';
+import * as ts from 'typescript/sync';
 
 function createServiceHost(program: ts.Program) {
 	const rootFileNames = program.getRootFileNames().map((x) => x);

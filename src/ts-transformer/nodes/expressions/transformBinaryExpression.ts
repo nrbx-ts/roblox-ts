@@ -33,7 +33,7 @@ import {
 	isStringType,
 } from 'ts-transformer/util/types';
 import { validateNotAnyType } from 'ts-transformer/util/validateNotAny';
-import ts from 'typescript';
+import * as ts from 'typescript/sync';
 
 function transformOptimizedArrayAssignmentPattern(
 	state: TransformState,

@@ -3,7 +3,7 @@ import util from 'node:util';
 import { LogService } from 'shared/classes/LogService';
 import { red, yellow } from 'shared/util/colors';
 import { getKindName } from 'ts-transformer/util/getKindName';
-import ts from 'typescript';
+import * as ts from 'typescript/sync';
 
 type LsInfo = {
 	name: string;

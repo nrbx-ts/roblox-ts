@@ -6,7 +6,7 @@ import { transformPropertyName } from 'ts-transformer/nodes/transformPropertyNam
 import { convertToIndexableExpression } from 'ts-transformer/util/convertToIndexableExpression';
 import { expressionMightMutate } from 'ts-transformer/util/expressionMightMutate';
 import { findConstructor } from 'ts-transformer/util/findConstructor';
-import ts from 'typescript';
+import * as ts from 'typescript/sync';
 
 type HasDecorators = Exclude<ts.HasDecorators, ts.AccessorDeclaration>;
 
@@ -44,7 +44,7 @@ function shouldInline(
 	// if the node is a parameter and there are any parameters with decorators after it, we can't inline
 	// this ensures all of the parameters are initialized before running any, including from sibling parameters
 	if (ts.isParameter(node)) {
-		const parameters = node.parent.parameters;
+		const parameters = (node.parent as ts.SignatureDeclaration).parameters;
 		const paramIdx = parameters.indexOf(node);
 		for (let i = paramIdx + 1; i < parameters.length; i++) {
 			if (countDecorators(parameters[i]) > 0) {

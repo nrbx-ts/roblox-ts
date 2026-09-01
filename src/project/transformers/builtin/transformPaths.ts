@@ -28,7 +28,7 @@ SOFTWARE.
 
 import path from 'node:path';
 import url from 'node:url';
-import ts from 'typescript';
+import * as ts from 'typescript/sync';
 
 /* ****************************************************************************************************************** */
 // region: Types
@@ -156,7 +156,7 @@ export default function transformer(program: ts.Program, config: TsTransformPath
 				p = p[0] === '.' ? p : `./${p}`;
 			}
 
-			const newStringLiteral = factory.createStringLiteral(p);
+			const newStringLiteral = factory.createStringLiteral(p, ts.TokenFlags.None);
 			return updaterFn(newStringLiteral);
 		}
 
@@ -167,7 +167,7 @@ export default function transformer(program: ts.Program, config: TsTransformPath
 			/* Update require() or import() */
 			if (isRequire(node) || isAsyncImport(node))
 				return update(node, (<ts.StringLiteral>node.arguments[0]).text, (p) => {
-					const res = factory.updateCallExpression(node, node.expression, node.typeArguments, [p]);
+					const res = factory.updateCallExpression(node, node.expression, undefined, node.typeArguments, [p]);
 
 					const textNode = node.arguments[0];
 					const commentRanges = ts.getLeadingCommentRanges(textNode.getFullText(), 0) || [];
@@ -214,7 +214,7 @@ export default function transformer(program: ts.Program, config: TsTransformPath
 					const newNode = factory.cloneNode(node.moduleSpecifier!) as ts.StringLiteral;
 					ts.setSourceMapRange(newNode, ts.getSourceMapRange(node));
 					ts.setTextRange(newNode, node.moduleSpecifier);
-					newNode.text = p.text;
+					Object.assign(newNode, { text: p.text });
 
 					return Object.assign(node, { moduleSpecifier: newNode });
 				});
@@ -233,8 +233,7 @@ export default function transformer(program: ts.Program, config: TsTransformPath
 								factory.updateLiteralTypeNode(argument, p),
 								node.attributes,
 								node.qualifier,
-								node.typeArguments,
-								node.isTypeOf
+								node.typeArguments
 							)
 						);
 			}

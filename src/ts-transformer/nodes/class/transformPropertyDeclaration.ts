@@ -4,7 +4,7 @@ import type { TransformState } from 'ts-transformer';
 import { DiagnosticService } from 'ts-transformer/classes/DiagnosticService';
 import { transformExpression } from 'ts-transformer/nodes/expressions/transformExpression';
 import { transformPropertyName } from 'ts-transformer/nodes/transformPropertyName';
-import ts from 'typescript';
+import * as ts from 'typescript/sync';
 
 export function transformPropertyDeclaration(
 	state: TransformState,

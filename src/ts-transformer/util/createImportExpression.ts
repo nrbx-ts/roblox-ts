@@ -17,7 +17,7 @@ import { DiagnosticService } from 'ts-transformer/classes/DiagnosticService';
 import { createGetService } from 'ts-transformer/util/createGetService';
 import { propertyAccessExpressionChain } from 'ts-transformer/util/expressionChain';
 import { getSourceFileFromModuleSpecifier } from 'ts-transformer/util/getSourceFileFromModuleSpecifier';
-import ts from 'typescript';
+import * as ts from 'typescript/sync';
 
 function getAbsoluteImport(moduleRbxPath: RbxPath) {
 	const pathExpressions: luau.Expression[] = [];
@@ -190,12 +190,19 @@ function getProjectImportParts(
 
 export function getImportParts(state: TransformState, sourceFile: ts.SourceFile, moduleSpecifier: ts.Expression) {
 	const moduleFile = getSourceFileFromModuleSpecifier(state, moduleSpecifier);
+	if (process.env.ROBLOX_TS_DEBUG_IMPORT) {
+		require('fs').appendFileSync('/tmp/order.log', 'DBG getImportParts ' + moduleSpecifier.getText() + ' moduleFile=' + (moduleFile ? moduleFile.fileName : 'NONE') + '\n');
+	}
+
 	if (!moduleFile) {
 		DiagnosticService.addDiagnostic(errors.noModuleSpecifierFile(moduleSpecifier));
 		return [luau.none()];
 	}
 
 	const virtualPath = state.guessVirtualPath(moduleFile.fileName) || moduleFile.fileName;
+	if (process.env.ROBLOX_TS_DEBUG_IMPORT) {
+		require('fs').appendFileSync('/tmp/order.log', '  virtualPath=' + virtualPath + ' insideNodeModules=' + ts.isInsideNodeModules(virtualPath) + '\n');
+	}
 
 	if (ts.isInsideNodeModules(virtualPath)) {
 		const moduleOutPath = state.pathTranslator.getImportPath(
@@ -206,6 +213,9 @@ export function getImportParts(state: TransformState, sourceFile: ts.SourceFile,
 	} else {
 		const moduleOutPath = state.pathTranslator.getImportPath(virtualPath);
 		const moduleRbxPath = state.rojoResolver.getRbxPathFromFilePath(moduleOutPath);
+		if (process.env.ROBLOX_TS_DEBUG_IMPORT) {
+			require('fs').appendFileSync('/tmp/order.log', '  moduleOutPath=' + moduleOutPath + ' moduleRbxPath=' + (moduleRbxPath ? moduleRbxPath.join('/') : 'NONE') + '\n');
+		}
 		if (!moduleRbxPath) {
 			DiagnosticService.addDiagnostic(
 				errors.noRojoData(moduleSpecifier, path.relative(state.data.projectPath, moduleOutPath), false)

@@ -26,7 +26,7 @@ import { transformTryStatement } from 'ts-transformer/nodes/statements/transform
 import { transformVariableStatement } from 'ts-transformer/nodes/statements/transformVariableStatement';
 import { transformWhileStatement } from 'ts-transformer/nodes/statements/transformWhileStatement';
 import { getKindName } from 'ts-transformer/util/getKindName';
-import ts from 'typescript';
+import * as ts from 'typescript/sync';
 
 const NO_EMIT = () => luau.list.make<luau.Statement>();
 

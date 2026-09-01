@@ -1,6 +1,6 @@
 import { fileUsesCommentDirectives } from 'project/preEmitDiagnostics/fileUsesCommentDirectives';
 import type { ProjectData } from 'shared/types';
-import type ts from 'typescript';
+import type * as ts from 'typescript/sync';
 
 export type PreEmitChecker = (data: ProjectData, sourceFile: ts.SourceFile) => Array<ts.Diagnostic>;
 const PRE_EMIT_DIAGNOSTICS: Array<PreEmitChecker> = [fileUsesCommentDirectives];

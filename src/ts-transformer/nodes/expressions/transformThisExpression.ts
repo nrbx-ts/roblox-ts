@@ -2,7 +2,7 @@ import luau from '@roblox-ts/luau-ast';
 import { errors } from 'shared/diagnostics';
 import { SYMBOL_NAMES, type TransformState } from 'ts-transformer';
 import { DiagnosticService } from 'ts-transformer/classes/DiagnosticService';
-import ts from 'typescript';
+import * as ts from 'typescript/sync';
 
 export function transformThisExpression(state: TransformState, node: ts.ThisExpression) {
 	const symbol = state.typeChecker.getSymbolAtLocation(node);

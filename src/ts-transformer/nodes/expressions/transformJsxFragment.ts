@@ -4,7 +4,7 @@ import type { TransformState } from 'ts-transformer';
 import { transformJsxChildren } from 'ts-transformer/nodes/jsx/transformJsxChildren';
 import { transformEntityName } from 'ts-transformer/nodes/transformEntityName';
 import { convertToIndexableExpression } from 'ts-transformer/util/convertToIndexableExpression';
-import ts from 'typescript';
+import * as ts from 'typescript/sync';
 
 export function transformJsxFragment(state: TransformState, node: ts.JsxFragment) {
 	const jsxFactoryEntity = state.resolver.getJsxFactoryEntity(node);

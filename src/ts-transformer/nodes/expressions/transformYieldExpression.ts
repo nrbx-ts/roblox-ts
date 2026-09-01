@@ -3,7 +3,7 @@ import type { TransformState } from 'ts-transformer/classes/TransformState';
 import { transformExpression } from 'ts-transformer/nodes/expressions/transformExpression';
 import { convertToIndexableExpression } from 'ts-transformer/util/convertToIndexableExpression';
 import { isUsedAsStatement } from 'ts-transformer/util/isUsedAsStatement';
-import type ts from 'typescript';
+import type * as ts from 'typescript/sync';
 
 export function transformYieldExpression(state: TransformState, node: ts.YieldExpression) {
 	if (!node.expression) {

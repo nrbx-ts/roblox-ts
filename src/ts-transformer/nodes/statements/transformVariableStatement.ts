@@ -16,7 +16,7 @@ import { isSymbolMutable } from 'ts-transformer/util/isSymbolMutable';
 import { isLuaTupleType } from 'ts-transformer/util/types';
 import { validateIdentifier } from 'ts-transformer/util/validateIdentifier';
 import { wrapExpressionStatement } from 'ts-transformer/util/wrapExpressionStatement';
-import ts from 'typescript';
+import * as ts from 'typescript/sync';
 
 export function transformVariable(state: TransformState, identifier: ts.Identifier, right?: luau.Expression) {
 	validateIdentifier(state, identifier);

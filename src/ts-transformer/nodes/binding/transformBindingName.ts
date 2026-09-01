@@ -3,7 +3,7 @@ import type { TransformState } from 'ts-transformer';
 import { transformArrayBindingPattern } from 'ts-transformer/nodes/binding/transformArrayBindingPattern';
 import { transformObjectBindingPattern } from 'ts-transformer/nodes/binding/transformObjectBindingPattern';
 import { transformIdentifierDefined } from 'ts-transformer/nodes/expressions/transformIdentifier';
-import ts from 'typescript';
+import * as ts from 'typescript/sync';
 
 export function transformBindingName(
 	state: TransformState,

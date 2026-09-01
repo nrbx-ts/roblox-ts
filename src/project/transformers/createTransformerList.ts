@@ -3,7 +3,7 @@ import path from 'node:path';
 import { warnings } from 'shared/diagnostics';
 import type { TransformerPluginConfig } from 'shared/types';
 import { DiagnosticService } from 'ts-transformer/classes/DiagnosticService';
-import ts from 'typescript';
+import * as ts from 'typescript/sync';
 
 interface TransformerBasePlugin {
 	before?: ts.TransformerFactory<ts.SourceFile>;

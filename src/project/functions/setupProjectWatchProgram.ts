@@ -19,7 +19,7 @@ import { DTS_EXT } from 'shared/constants';
 import { DiagnosticError } from 'shared/errors/DiagnosticError';
 import { assert } from 'shared/util/assert';
 import { getRootDirs } from 'shared/util/getRootDirs';
-import ts from 'typescript';
+import * as ts from 'typescript/sync';
 
 function fixSlashes(fsPath: string) {
 	return fsPath.replace(/\\/g, '/');

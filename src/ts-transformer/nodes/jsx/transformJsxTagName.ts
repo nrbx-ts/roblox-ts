@@ -4,7 +4,7 @@ import type { TransformState } from 'ts-transformer';
 import { DiagnosticService } from 'ts-transformer/classes/DiagnosticService';
 import { transformExpression } from 'ts-transformer/nodes/expressions/transformExpression';
 import { convertToIndexableExpression } from 'ts-transformer/util/convertToIndexableExpression';
-import ts from 'typescript';
+import * as ts from 'typescript/sync';
 
 function transformJsxTagNameExpression(state: TransformState, node: ts.JsxTagNameExpression) {
 	// host component

@@ -1,6 +1,6 @@
 import luau from '@roblox-ts/luau-ast';
 import type { TransformState } from 'ts-transformer/classes/TransformState';
-import type ts from 'typescript';
+import type * as ts from 'typescript/sync';
 
 export function wrapStatementsAsGenerator(state: TransformState, node: ts.Node, statements: luau.List<luau.Statement>) {
 	return luau.list.make(

@@ -5,7 +5,7 @@ import { transformVariable } from 'ts-transformer/nodes/statements/transformVari
 import { transformEntityName } from 'ts-transformer/nodes/transformEntityName';
 import { createImportExpression } from 'ts-transformer/util/createImportExpression';
 import { isSymbolOfValue } from 'ts-transformer/util/isSymbolOfValue';
-import ts from 'typescript';
+import * as ts from 'typescript/sync';
 
 export function transformImportEqualsDeclaration(state: TransformState, node: ts.ImportEqualsDeclaration) {
 	const { moduleReference } = node;

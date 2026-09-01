@@ -12,7 +12,8 @@ import { hasErrors } from 'shared/util/hasErrors';
 import { MultiTransformState, TransformState, transformSourceFile } from 'ts-transformer';
 import { DiagnosticService } from 'ts-transformer/classes/DiagnosticService';
 import { createTransformServices } from 'ts-transformer/util/createTransformServices';
-import ts from 'typescript';
+import * as ts from 'typescript/sync';
+import * as tsProto from 'typescript/proto';
 
 const PROJECT_DIR = PATH_SEP;
 const ROOT_DIR = pathJoin(PROJECT_DIR, 'src');
@@ -52,13 +53,12 @@ export class VirtualProject {
 
 		this.compilerOptions = {
 			allowSyntheticDefaultImports: true,
-			downlevelIteration: true,
 			noLib: true,
 			strict: true,
 			target: ts.ScriptTarget.ESNext,
-			module: ts.ModuleKind.CommonJS,
-			moduleResolution: ts.ModuleResolutionKind.Node10,
-			moduleDetection: ts.ModuleDetectionKind.Force,
+			module: ts.ModuleKind.NodeNext,
+			moduleResolution: ts.ModuleResolutionKind.NodeNext,
+			moduleDetection: tsProto.ModuleDetectionKind.Force,
 			typeRoots: [RBXTS_SCOPE_PATH],
 			resolveJsonModule: true,
 			experimentalDecorators: true,

@@ -3,7 +3,7 @@ import { findLastIndex } from 'shared/util/findLastIndex';
 import type { TransformState } from 'ts-transformer';
 import { transformExpression } from 'ts-transformer/nodes/expressions/transformExpression';
 import { isSymbolMutable } from 'ts-transformer/util/isSymbolMutable';
-import ts from 'typescript';
+import * as ts from 'typescript/sync';
 
 /**
  * Takes an array of `ts.Expression` and transforms each, capturing prereqs. Returns the transformed nodes.

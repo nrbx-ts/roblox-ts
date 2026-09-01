@@ -1,4 +1,4 @@
-import ts from 'typescript';
+import * as ts from 'typescript/sync';
 
 export function isReturnBlockedByTryStatement(node: ts.Node) {
 	const ancestor = ts.findAncestor(

@@ -1,4 +1,4 @@
-import ts from 'typescript';
+import * as ts from 'typescript/sync';
 
 /**
  * Checks that the symbol represents something with a value at runtime

@@ -3,7 +3,7 @@ import type { TransformState } from 'ts-transformer/classes/TransformState';
 import { transformIdentifier } from 'ts-transformer/nodes/expressions/transformIdentifier';
 import { convertToIndexableExpression } from 'ts-transformer/util/convertToIndexableExpression';
 import { validateIdentifier } from 'ts-transformer/util/validateIdentifier';
-import ts from 'typescript';
+import * as ts from 'typescript/sync';
 
 export function transformEntityName(state: TransformState, node: ts.EntityName) {
 	if (ts.isIdentifier(node)) {

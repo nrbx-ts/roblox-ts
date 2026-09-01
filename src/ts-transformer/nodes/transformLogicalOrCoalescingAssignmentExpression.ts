@@ -3,7 +3,7 @@ import type { TransformState } from 'ts-transformer/classes/TransformState';
 import { transformExpression } from 'ts-transformer/nodes/expressions/transformExpression';
 import { transformWritableExpression } from 'ts-transformer/nodes/transformWritable';
 import { createTruthinessChecks } from 'ts-transformer/util/createTruthinessChecks';
-import ts from 'typescript';
+import * as ts from 'typescript/sync';
 
 function transformCoalescingAssignmentExpression(
 	state: TransformState,
@@ -120,12 +120,13 @@ export function transformLogicalOrCoalescingAssignmentExpression(
 	node: ts.AssignmentExpression<ts.Token<ts.LogicalOrCoalescingAssignmentOperator>>
 ): luau.WritableExpression {
 	const operator = node.operatorToken.kind;
+	const left = node.left as ts.LeftHandSideExpression;
 	if (operator === ts.SyntaxKind.QuestionQuestionEqualsToken) {
-		return transformCoalescingAssignmentExpression(state, node.left, node.right);
+		return transformCoalescingAssignmentExpression(state, left, node.right);
 	} else if (operator === ts.SyntaxKind.AmpersandAmpersandEqualsToken) {
-		return transformLogicalAndAssignmentExpression(state, node.left, node.right);
+		return transformLogicalAndAssignmentExpression(state, left, node.right);
 	} else {
-		return transformLogicalOrAssignmentExpression(state, node.left, node.right);
+		return transformLogicalOrAssignmentExpression(state, left, node.right);
 	}
 }
 

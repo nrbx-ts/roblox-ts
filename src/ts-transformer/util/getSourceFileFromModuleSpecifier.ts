@@ -1,5 +1,5 @@
 import type { TransformState } from 'ts-transformer/classes/TransformState';
-import ts from 'typescript';
+import * as ts from 'typescript/sync';
 
 export function getSourceFileFromModuleSpecifier(state: TransformState, moduleSpecifier: ts.Expression) {
 	const symbol =
@@ -12,8 +12,8 @@ export function getSourceFileFromModuleSpecifier(state: TransformState, moduleSp
 			const sourceFile = moduleSpecifier.getSourceFile();
 			const mode = state.program.getModeForUsageLocation(sourceFile, declaration.name);
 			const resolvedModuleInfo = state.program.getResolvedModule(sourceFile, declaration.name.text, mode);
-			if (resolvedModuleInfo?.resolvedModule) {
-				return state.program.getSourceFile(resolvedModuleInfo.resolvedModule.resolvedFileName);
+			if (resolvedModuleInfo) {
+				return state.program.getSourceFile(resolvedModuleInfo.resolvedFileName);
 			}
 		}
 

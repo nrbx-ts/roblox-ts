@@ -4,7 +4,7 @@ import type { TransformState } from 'ts-transformer';
 import { DiagnosticService } from 'ts-transformer/classes/DiagnosticService';
 import { skipUpwards } from 'ts-transformer/util/traversal';
 import { walkTypes } from 'ts-transformer/util/types';
-import ts from 'typescript';
+import * as ts from 'typescript/sync';
 
 function getThisParameter(parameters: ts.NodeArray<ts.ParameterDeclaration>) {
 	const firstParam = parameters[0];

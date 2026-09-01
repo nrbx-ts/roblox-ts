@@ -9,7 +9,7 @@ import { transformPropertyName } from 'ts-transformer/nodes/transformPropertyNam
 import { transformStatementList } from 'ts-transformer/nodes/transformStatementList';
 import { getExtendsNode } from 'ts-transformer/util/getExtendsNode';
 import { getStatements } from 'ts-transformer/util/getStatements';
-import ts from 'typescript';
+import * as ts from 'typescript/sync';
 
 const CONSTRUCTOR = 'constructor';
 
@@ -114,7 +114,7 @@ export function transformClassConstructor(
 		}
 	}
 
-	luau.list.pushList(statements, transformPropertyInitializers(state, node.parent));
+	luau.list.pushList(statements, transformPropertyInitializers(state, node.parent as ts.ClassLikeDeclaration));
 
 	luau.list.pushList(statements, transformStatementList(state, node.body, bodyStatements.slice(superIndex + 1)));
 

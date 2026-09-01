@@ -2,7 +2,7 @@ import luau from '@roblox-ts/luau-ast';
 import type { TransformState } from 'ts-transformer';
 import { isSymbolMutable } from 'ts-transformer/util/isSymbolMutable';
 import { skipDownwards } from 'ts-transformer/util/traversal';
-import ts from 'typescript';
+import * as ts from 'typescript/sync';
 
 export function expressionMightMutate(
 	state: TransformState,

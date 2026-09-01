@@ -1,7 +1,7 @@
 import luau from '@roblox-ts/luau-ast';
 import type { TransformState } from 'ts-transformer';
 import { transformExpression } from 'ts-transformer/nodes/expressions/transformExpression';
-import type ts from 'typescript';
+import type * as ts from 'typescript/sync';
 
 export function transformInitializer(state: TransformState, id: luau.WritableExpression, initializer: ts.Expression) {
 	return luau.create(luau.SyntaxKind.IfStatement, {

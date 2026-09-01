@@ -6,7 +6,7 @@ import type { TransformState } from 'ts-transformer/classes/TransformState';
 import { transformExpression } from 'ts-transformer/nodes/expressions/transformExpression';
 import { ensureTransformOrder } from 'ts-transformer/util/ensureTransformOrder';
 import { fixupWhitespaceAndDecodeEntities } from 'ts-transformer/util/fixupWhitespaceAndDecodeEntities';
-import ts from 'typescript';
+import * as ts from 'typescript/sync';
 
 export function transformJsxChildren(state: TransformState, children: ReadonlyArray<ts.JsxChild>) {
 	const lastJsxChildIndex = findLastIndex(

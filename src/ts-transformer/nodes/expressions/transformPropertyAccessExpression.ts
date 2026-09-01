@@ -6,7 +6,7 @@ import { convertToIndexableExpression } from 'ts-transformer/util/convertToIndex
 import { getConstantValueLiteral } from 'ts-transformer/util/getConstantValueLiteral';
 import { skipUpwards } from 'ts-transformer/util/traversal';
 import { validateNotAnyType } from 'ts-transformer/util/validateNotAny';
-import ts from 'typescript';
+import * as ts from 'typescript/sync';
 
 export function transformPropertyAccessExpressionInner(
 	state: TransformState,

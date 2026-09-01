@@ -9,7 +9,7 @@ import { transformStatementList } from 'ts-transformer/nodes/transformStatementL
 import { isMethod } from 'ts-transformer/util/isMethod';
 import { assignToMapPointer, type Pointer } from 'ts-transformer/util/pointer';
 import { wrapStatementsAsGenerator } from 'ts-transformer/util/wrapStatementsAsGenerator';
-import ts from 'typescript';
+import * as ts from 'typescript/sync';
 
 export function transformMethodDeclaration(
 	state: TransformState,

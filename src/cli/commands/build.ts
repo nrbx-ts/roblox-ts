@@ -17,7 +17,7 @@ import { LoggableError } from 'shared/errors/LoggableError';
 import type { ProjectOptions } from 'shared/types';
 import { getRootDirs } from 'shared/util/getRootDirs';
 import { hasErrors } from 'shared/util/hasErrors';
-import ts from 'typescript';
+import * as ts from 'typescript/sync';
 
 function getTsConfigProjectOptions(tsConfigPath?: string): Partial<ProjectOptions> | undefined {
 	if (tsConfigPath !== undefined) {

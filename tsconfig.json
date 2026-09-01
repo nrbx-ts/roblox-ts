@@ -1,9 +1,10 @@
 {
 	"compilerOptions": {
 		"declaration": true,
-		"module": "commonjs",
+		"module": "nodenext",
 		"target": "ES2019",
-		"lib": ["ES2019"],
+		"lib": ["ES2022", "ESNext.Disposable"],
+		"types": ["@types/node"],
 		"strict": true,
 		"noFallthroughCasesInSwitch": true,
 		"strictNullChecks": true,
@@ -14,21 +15,9 @@
 		"sourceMap": true,
 		"outDir": "out",
 		"rootDir": "src",
-		"baseUrl": "src",
 		"paths": {
-			"*": ["*"]
-		},
-		"plugins": [
-			{
-				"transform": "typescript-transform-paths",
-				"exclude": ["**/node_modules/**"]
-			},
-			{
-				"transform": "typescript-transform-paths",
-				"exclude": ["**/node_modules/**"],
-				"afterDeclarations": true
-			}
-		]
+			"*": ["./src/*"]
+		}
 	},
 	"include": ["src"],
 	"exclude": ["src/cli/test.ts"]

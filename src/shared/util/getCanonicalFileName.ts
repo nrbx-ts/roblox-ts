@@ -1,4 +1,4 @@
-import ts from 'typescript';
+import * as ts from 'typescript/sync';
 
 // ts.sys does not exist in browser, and thus the playground
 // VirtualFileSystem is case-sensitive, so default to true
