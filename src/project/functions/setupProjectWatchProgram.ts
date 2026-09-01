@@ -184,6 +184,11 @@ export async function setupProjectWatchProgram(data: ProjectData) {
 
 	function runCompile(): { emitResult: ts.EmitResult; reporter: ProgressReporter } {
 		const reporter = new ProgressReporter();
+		// Start each watch cycle on a fresh screen so the progress bars and
+		// summary block are easy to see.
+		if (reporter.isEnabled) {
+			console.clear();
+		}
 		try {
 			if (!initialCompileCompleted) {
 				return { emitResult: runInitialCompile(reporter), reporter };
@@ -253,6 +258,5 @@ export async function setupProjectWatchProgram(data: ProjectData) {
 		});
 	}
 
-	reportText('Starting compilation in watch mode...');
 	reportEmitResult(runCompile());
 }

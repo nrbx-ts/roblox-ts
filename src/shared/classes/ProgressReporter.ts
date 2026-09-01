@@ -179,11 +179,13 @@ const SPINNER = '◌';
  *   ● compile   ████████████████████████░  95%  (src/Main.server.ts)
  *   ● write     ░░░░░░░░░░░░░░░░░░░░░░░░░   0%
  *
- * On success `finish()` replaces the bars with a summary block:
+ * On success `finish()` replaces the bars with a summary block, separated
+ * from surrounding output by a blank line, with the lines tab-indented and
+ * rendered in dark grey:
  *
  *   ✔ RBXTSC
- *     Compiled 12 files successfully in 193ms
- *     Found 0 errors, watching for file changes.
+ *   \tCompiled 12 files successfully in 193ms
+ *   \tFound 0 errors, watching for file changes.
  */
 export class ProgressReporter {
 	private readonly colorLevel: 0 | 1 | 3;
@@ -263,10 +265,12 @@ export class ProgressReporter {
 			if (extraLines.length > 0 && !extraLines.endsWith('\n')) {
 				output += '\n';
 			}
-			output += `${colorize(TICK, this.color, this.colorLevel)} ${colorize(this.title, this.color, this.colorLevel)}\n`;
+			// Blank line on either side separates the block from surrounding output.
+			output += `\n${colorize(TICK, this.color, this.colorLevel)} ${colorize(this.title, this.color, this.colorLevel)}\n`;
 			for (const line of this.summaryLines) {
-				output += `  ${line}\n`;
+				output += `\t\t${ansiColor(line, 90, this.colorLevel)}\n`;
 			}
+			output += '\n';
 		}
 		this.logUpdate.write(output);
 	}
